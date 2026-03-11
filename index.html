@@ -888,7 +888,17 @@ body{font-family:Tahoma,sans-serif;background:#1a1a2e;min-height:100vh;display:f
     transition:transform 0.3s ease;
     transform:translateX(100%);
   }
-  .mwin.mob-visible{transform:translateX(0);}
+  #chatwin{
+    width:100vw !important;
+    min-width:unset !important;
+    height:100dvh !important;
+    border-radius:0 !important;
+    border:none !important;
+    position:fixed;top:0;left:0;z-index:10;
+    transition:transform 0.3s ease;
+    transform:translateX(100%);
+  }
+  #chatwin.mob-visible{transform:translateX(0);}
   
   /* Sohbet başlığına geri butonu */
   .mob-back-btn{
