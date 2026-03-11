@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Messenger Life</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:Tahoma,Arial,sans-serif;background:#1a1a2e;height:100dvh;overflow:hidden;}
+
+/* LOGIN */
+#loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100dvh;background:linear-gradient(180deg,#0a0a1a,#1a1a2e);padding:24px;}
+.logo-area{text-align:center;margin-bottom:32px;}
+.logo-area svg{display:block;margin:0 auto 12px;}
+.logo-title{color:white;font-size:22px;font-weight:bold;letter-spacing:1px;}
+.logo-sub{color:rgba(255,255,255,0.5);font-size:12px;margin-top:4px;}
+.login-card{background:white;border-radius:16px;padding:24px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.login-card input{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:10px;font-size:15px;outline:none;margin-bottom:12px;font-family:Tahoma,sans-serif;}
+.login-card input:focus{border-color:#0078d4;}
+.login-btn{width:100%;padding:13px;background:linear-gradient(135deg,#0078d4,#005a9e);color:white;border:none;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;font-family:Tahoma,sans-serif;}
+.login-err{color:#cc0000;font-size:12px;margin-top:8px;text-align:center;min-height:16px;}
+.login-toggle{text-align:center;margin-top:14px;font-size:13px;color:#555;}
+.login-toggle a{color:#0078d4;cursor:pointer;text-decoration:none;font-weight:bold;}
+
+/* ANA EKRAN */
+#mainScreen{display:none;flex-direction:column;height:100dvh;background:#f0f0f0;}
+
+/* Header */
+.mob-header{background:linear-gradient(135deg,#0078d4,#005a9e);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.mob-header-av{width:40px;height:40px;border-radius:50%;border:2px solid rgba(255,255,255,0.5);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(255,255,255,0.1);flex-shrink:0;cursor:pointer;}
+.mob-header-av img{width:100%;height:100%;object-fit:cover;}
+.mob-header-info{flex:1;}
+.mob-header-name{color:white;font-size:14px;font-weight:bold;}
+.mob-header-status{color:rgba(255,255,255,0.7);font-size:11px;}
+.mob-header-btn{width:36px;height:36px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;}
+
+/* Arama */
+.mob-search{padding:8px 12px;background:white;border-bottom:1px solid #ddd;}
+.mob-search input{width:100%;padding:9px 14px;border:1px solid #ddd;border-radius:20px;font-size:14px;outline:none;background:#f5f5f5;}
+.mob-search input:focus{background:white;border-color:#0078d4;}
+
+/* Kişi listesi */
+#contactList{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.group-header{padding:6px 14px;font-size:11px;font-weight:bold;color:#0078d4;background:#e8f4fd;border-bottom:1px solid #cce0f0;position:sticky;top:0;z-index:1;}
+.group-header.offline{color:#888;background:#f0f0f0;border-color:#ddd;}
+.contact-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #eee;background:white;cursor:pointer;active:background:#e8f4fd;}
+.contact-item:active{background:#e8f4fd;}
+.contact-av{position:relative;flex-shrink:0;}
+.contact-av-img{width:44px;height:44px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#e8f4fd;font-size:26px;}
+.contact-av-img img{width:100%;height:100%;object-fit:cover;}
+.contact-dot{position:absolute;bottom:1px;right:1px;width:11px;height:11px;border-radius:50%;border:2px solid white;}
+.contact-info{flex:1;min-width:0;}
+.contact-name{font-size:14px;font-weight:bold;color:#222;}
+.contact-msg{font-size:12px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.contact-time{font-size:10px;color:#aaa;flex-shrink:0;}
+
+/* Sohbet ekranı */
+#chatScreen{display:none;flex-direction:column;height:100dvh;background:#e5ddd5;position:fixed;top:0;left:0;width:100%;z-index:50;}
+.chat-header{background:linear-gradient(135deg,#0078d4,#005a9e);padding:8px 12px;display:flex;align-items:center;gap:10px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
+.chat-back{color:white;font-size:22px;cursor:pointer;padding:4px 6px;line-height:1;}
+.chat-header-av{width:38px;height:38px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(255,255,255,0.2);flex-shrink:0;}
+.chat-header-av img{width:100%;height:100%;object-fit:cover;}
+.chat-header-info{flex:1;}
+.chat-header-name{color:white;font-size:14px;font-weight:bold;}
+.chat-header-status{color:rgba(255,255,255,0.7);font-size:11px;}
+.chat-header-call{color:white;font-size:20px;cursor:pointer;padding:4px 8px;}
+
+#messages{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 10px;display:flex;flex-direction:column;gap:5px;}
+.msg-row{display:flex;}
+.msg-row.me{justify-content:flex-end;}
+.msg-row.them{justify-content:flex-start;}
+.msg-bubble{max-width:78%;padding:8px 12px;border-radius:16px;font-size:14px;line-height:1.4;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,0.12);}
+.msg-row.me .msg-bubble{background:#0078d4;color:white;border-bottom-right-radius:4px;}
+.msg-row.them .msg-bubble{background:white;color:#333;border-bottom-left-radius:4px;}
+.msg-time{font-size:10px;opacity:0.6;margin-top:3px;text-align:right;}
+.msg-file{display:flex;align-items:center;gap:8px;padding:8px 12px;background:white;border-radius:12px;box-shadow:0 1px 2px rgba(0,0,0,0.12);max-width:80%;}
+
+.typing-ind{padding:4px 10px;font-size:12px;color:#888;font-style:italic;}
+
+.chat-input-area{padding:8px 10px;background:white;border-top:1px solid #ddd;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;}
+.chat-input-area textarea{flex:1;padding:9px 14px;border:1px solid #ddd;border-radius:22px;font-size:15px;outline:none;resize:none;font-family:Tahoma,sans-serif;line-height:1.4;max-height:100px;background:#f5f5f5;}
+.chat-input-area textarea:focus{background:white;border-color:#0078d4;}
+.send-btn{width:42px;height:42px;background:#0078d4;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;cursor:pointer;flex-shrink:0;border:none;}
+.send-btn:active{background:#005a9e;}
+
+/* Kişi ekle modal */
+#addModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:100;align-items:center;justify-content:center;padding:20px;}
+.add-card{background:white;border-radius:16px;padding:24px;width:100%;max-width:340px;}
+.add-card h3{font-size:16px;margin-bottom:16px;color:#333;}
+.add-card input{width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;font-size:14px;outline:none;margin-bottom:8px;}
+.add-card input:focus{border-color:#0078d4;}
+.add-err{color:#cc0000;font-size:12px;min-height:16px;margin-bottom:8px;}
+.add-btns{display:flex;gap:8px;}
+.add-btns button{flex:1;padding:11px;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:Tahoma,sans-serif;}
+.add-btns .cancel{background:#f0f0f0;color:#555;}
+.add-btns .ok{background:#0078d4;color:white;font-weight:bold;}
+
+/* Bildirim */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:white;padding:10px 20px;border-radius:20px;font-size:13px;opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="loginScreen">
+  <div class="logo-area">
+    <svg width="60" height="60" viewBox="0 0 40 40">
+      <rect x="1" y="1" width="17" height="17" fill="#ff6a00" rx="3"/>
+      <rect x="22" y="1" width="17" height="17" fill="#00b4ff" rx="3"/>
+      <rect x="1" y="22" width="17" height="17" fill="#00cc44" rx="3"/>
+      <rect x="22" y="22" width="17" height="17" fill="#ffcc00" rx="3"/>
+    </svg>
+    <div class="logo-title">Messenger Life</div>
+    <div class="logo-sub">Arkadaşlarınla bağlantıda kal</div>
+  </div>
+  <div class="login-card">
+    <div id="loginForm">
+      <input id="loginEmail" type="email" placeholder="E-posta adresi" autocomplete="email">
+      <input id="loginPass" type="password" placeholder="Şifre" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="login-btn" onclick="doLogin()">Giriş Yap</button>
+      <div class="login-err" id="loginErr"></div>
+      <div class="login-toggle">Hesabın yok mu? <a onclick="showReg()">Kayıt Ol</a></div>
+    </div>
+    <div id="regForm" style="display:none;">
+      <input id="regName" type="text" placeholder="Görünen ad">
+      <input id="regEmail" type="email" placeholder="E-posta adresi" autocomplete="email">
+      <input id="regPass" type="password" placeholder="Şifre (min 6 karakter)" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+      <button class="login-btn" onclick="doRegister()">Kayıt Ol</button>
+      <div class="login-err" id="regErr"></div>
+      <div class="login-toggle">Hesabın var mı? <a onclick="showLogin()">Giriş Yap</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ANA EKRAN (KİŞİ LİSTESİ) -->
+<div id="mainScreen">
+  <div class="mob-header">
+    <div class="mob-header-av" id="myAv">🧑</div>
+    <div class="mob-header-info">
+      <div class="mob-header-name" id="myName">Yükleniyor...</div>
+      <div class="mob-header-status">● Çevrimiçi</div>
+    </div>
+    <div class="mob-header-btn" onclick="openAddModal()" title="Kişi Ekle">➕</div>
+    <div class="mob-header-btn" onclick="doLogout()" title="Çıkış">🚪</div>
+  </div>
+  <div class="mob-search">
+    <input type="search" placeholder="🔍 Kişi ara..." oninput="filterContacts(this.value)">
+  </div>
+  <div id="contactList"></div>
+</div>
+
+<!-- SOHBET EKRANI -->
+<div id="chatScreen">
+  <div class="chat-header">
+    <div class="chat-back" onclick="closeChat()">‹</div>
+    <div class="chat-header-av" id="chatAv">😎</div>
+    <div class="chat-header-info">
+      <div class="chat-header-name" id="chatName">İsim</div>
+      <div class="chat-header-status" id="chatStatus">● Çevrimiçi</div>
+    </div>
+    <div class="chat-header-call" onclick="openGames()">🎮</div>
+    <div class="chat-header-call" onclick="showToast('Görüntülü arama masaüstünde kullanılabilir')">📹</div>
+  </div>
+  <div id="messages"></div>
+  <div class="typing-ind" id="typingInd" style="display:none;">yazıyor...</div>
+  <div class="chat-input-area">
+    <textarea id="msgInput" placeholder="Mesaj yaz..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';emitTyping();"></textarea>
+    <button class="send-btn" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- KİŞİ EKLE MODAL -->
+<div id="addModal" onclick="if(event.target===this)closeAddModal()">
+  <div class="add-card">
+    <h3>➕ Kişi Ekle</h3>
+    <input id="addEmail" type="email" placeholder="ornek@hotmail.com" onkeydown="if(event.key==='Enter')doAdd()">
+    <div class="add-err" id="addErr"></div>
+    <div class="add-btns">
+      <button class="cancel" onclick="closeAddModal()">İptal</button>
+      <button class="ok" onclick="doAdd()">Ekle</button>
+    </div>
+  </div>
+</div>
+
+<!-- BİLDİRİM -->
+<div id="toast"></div>
+
+<!-- OYUNLAR EKRANI -->
+<div id="gamesScreen" style="display:none;flex-direction:column;height:100dvh;background:#1a1a2e;position:fixed;top:0;left:0;width:100%;z-index:60;">
+  <div style="background:linear-gradient(135deg,#0078d4,#005a9e);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <div onclick="closeGames()" style="color:white;font-size:22px;cursor:pointer;padding:4px 8px;">‹</div>
+    <div style="color:white;font-size:15px;font-weight:bold;">🎮 Oyunlar</div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div onclick="launchGame('tictactoe')" style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:40px;margin-bottom:8px;">⭕</div>
+      <div style="color:white;font-size:14px;font-weight:bold;">XOX</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">3'lü strateji</div>
+    </div>
+    <div onclick="launchGame('memory')" style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:40px;margin-bottom:8px;">🃏</div>
+      <div style="color:white;font-size:14px;font-weight:bold;">Hafıza</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">Kart eşleştir</div>
+    </div>
+    <div onclick="launchGame('rps')" style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:40px;margin-bottom:8px;">✊</div>
+      <div style="color:white;font-size:14px;font-weight:bold;">Taş Kağıt Makas</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">Hızlı mini oyun</div>
+    </div>
+    <div onclick="launchGame('word')" style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:40px;margin-bottom:8px;">📝</div>
+      <div style="color:white;font-size:14px;font-weight:bold;">Kelime Bul</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">Türkçe kelimeler</div>
+    </div>
+    <div onclick="launchGame('snake')" style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:40px;margin-bottom:8px;">🐍</div>
+      <div style="color:white;font-size:14px;font-weight:bold;">Yılan</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">Klasik yılan</div>
+    </div>
+    <div onclick="launchGame('2048')" style="background:rgba(255,255,255,0.08);border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:40px;margin-bottom:8px;">🔢</div>
+      <div style="color:white;font-size:14px;font-weight:bold;">2048</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">Sayı birleştir</div>
+    </div>
+    <div onclick="mobOkeyInvite()" style="background:linear-gradient(135deg,rgba(255,180,0,0.15),rgba(255,100,0,0.15));border-radius:14px;padding:20px;text-align:center;cursor:pointer;border:1px solid rgba(255,160,0,0.3);grid-column:span 2;">
+      <div style="font-size:40px;margin-bottom:8px;">🀄</div>
+      <div style="color:#ffd700;font-size:15px;font-weight:bold;">Okey</div>
+      <div style="color:rgba(255,255,255,0.5);font-size:11px;">Arkadaşınla çevrimiçi oyna</div>
+    </div>
+  </div>
+</div>
+
+<!-- OKEY DAVET MODAL -->
+<div id="okeyInviteModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:80;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#1e2a4a;border-radius:16px;padding:24px;width:100%;max-width:320px;text-align:center;border:1px solid rgba(255,160,0,0.3);">
+    <div style="font-size:48px;margin-bottom:12px;">🀄</div>
+    <div id="okeyInviteMsg" style="color:white;font-size:16px;font-weight:bold;margin-bottom:8px;">Okey Daveti</div>
+    <div id="okeyInviteSub" style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:20px;">Arkadaşını bekliyor...</div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="okeyAcceptBtn" style="display:none;padding:11px 22px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-weight:bold;" onclick="mobOkeyAccept()">✅ Kabul Et</button>
+      <button onclick="mobOkeyDecline()" style="padding:11px 22px;background:#ef4444;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">❌ Reddet</button>
+    </div>
+  </div>
+</div>
+
+<!-- OKEY OYUN EKRANI -->
+<div id="okeyScreen" style="display:none;flex-direction:column;height:100dvh;background:#0a1628;position:fixed;top:0;left:0;width:100%;z-index:75;">
+  <!-- Başlık -->
+  <div style="background:linear-gradient(135deg,#1e3a5f,#0a1628);padding:8px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid rgba(255,160,0,0.2);">
+    <div onclick="mobOkeyLeave()" style="color:white;font-size:20px;cursor:pointer;padding:4px 8px;">‹</div>
+    <div style="font-size:18px;">🀄</div>
+    <div style="color:#ffd700;font-size:14px;font-weight:bold;flex:1;">Okey</div>
+    <div id="okTurn" style="color:rgba(255,255,255,0.5);font-size:12px;"></div>
+  </div>
+  <!-- Rakip eli -->
+  <div style="padding:6px 8px;display:flex;align-items:center;gap:6px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div id="okOppName" style="color:rgba(255,255,255,0.5);font-size:11px;min-width:50px;">Rakip</div>
+    <div id="okOppHand" style="display:flex;flex-wrap:nowrap;gap:2px;overflow:hidden;flex:1;"></div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.3);" id="okOppCount"></div>
+  </div>
+  <!-- Orta alan: Deste + Atılan + Okey taşı -->
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:8px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div style="text-align:center;">
+      <div style="color:rgba(255,255,255,0.4);font-size:10px;margin-bottom:3px;">OKEY</div>
+      <div id="okOkeyTile" style="width:36px;height:52px;background:linear-gradient(135deg,#fff8e1,#ffe0b2);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;border:2px solid #ffd700;color:#333;"></div>
+    </div>
+    <div style="text-align:center;" onclick="mobOkeyDraw()">
+      <div style="color:rgba(255,255,255,0.4);font-size:10px;margin-bottom:3px;">DESTE</div>
+      <div id="okPile" style="width:36px;height:52px;background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:5px;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:bold;border:2px solid #42a5f5;cursor:pointer;">📥</div>
+    </div>
+    <div style="text-align:center;" onclick="mobOkeyTakeDiscard()">
+      <div style="color:rgba(255,255,255,0.4);font-size:10px;margin-bottom:3px;">ATILAN</div>
+      <div id="okDiscard" style="width:36px;height:52px;background:rgba(255,255,255,0.05);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:10px;border:1px dashed rgba(255,255,255,0.2);cursor:pointer;"></div>
+    </div>
+  </div>
+  <!-- Dizim tahtası -->
+  <div style="padding:4px 6px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,0.05);">
+    <div style="color:rgba(255,255,255,0.3);font-size:10px;margin-bottom:3px;">DİZİM TAHTASI — seçili taşı buraya bırak</div>
+    <div id="okBoard" style="display:flex;flex-direction:column;gap:3px;">
+      <div id="okRow0" onclick="mobOkeyDropRow(0)" style="min-height:34px;background:rgba(255,255,255,0.04);border-radius:5px;display:flex;gap:2px;align-items:center;padding:2px 4px;border:1px dashed rgba(255,255,255,0.1);flex-wrap:wrap;"></div>
+      <div id="okRow1" onclick="mobOkeyDropRow(1)" style="min-height:34px;background:rgba(255,255,255,0.04);border-radius:5px;display:flex;gap:2px;align-items:center;padding:2px 4px;border:1px dashed rgba(255,255,255,0.1);flex-wrap:wrap;"></div>
+      <div id="okRow2" onclick="mobOkeyDropRow(2)" style="min-height:34px;background:rgba(255,255,255,0.04);border-radius:5px;display:flex;gap:2px;align-items:center;padding:2px 4px;border:1px dashed rgba(255,255,255,0.1);flex-wrap:wrap;"></div>
+      <div id="okRow3" onclick="mobOkeyDropRow(3)" style="min-height:34px;background:rgba(255,255,255,0.04);border-radius:5px;display:flex;gap:2px;align-items:center;padding:2px 4px;border:1px dashed rgba(255,255,255,0.1);flex-wrap:wrap;"></div>
+    </div>
+  </div>
+  <!-- Benim elim -->
+  <div style="flex:1;padding:4px 6px;overflow-y:auto;">
+    <div style="color:rgba(255,255,255,0.3);font-size:10px;margin-bottom:3px;">ELİM</div>
+    <div id="okHand" style="display:flex;flex-wrap:wrap;gap:3px;"></div>
+  </div>
+  <!-- Butonlar -->
+  <div style="padding:6px 8px;display:flex;gap:6px;flex-shrink:0;background:rgba(0,0,0,0.3);flex-wrap:wrap;">
+    <button onclick="mobOkeyDiscard()" style="flex:1;padding:8px 4px;background:#ef4444;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;min-width:60px;">📤 At</button>
+    <button onclick="mobOkeyMoveToBoard()" style="flex:1;padding:8px 4px;background:#3b82f6;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;min-width:60px;">📋 Tah.</button>
+    <button onclick="mobOkeyRecall()" style="flex:1;padding:8px 4px;background:#6b7280;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;min-width:60px;">↩ Geri</button>
+    <button onclick="mobOkeySort()" style="flex:1;padding:8px 4px;background:#8b5cf6;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;min-width:60px;">🔀 Sırala</button>
+    <button onclick="mobOkeyWin()" style="flex:1;padding:8px 4px;background:#22c55e;color:white;border:none;border-radius:8px;font-size:12px;cursor:pointer;min-width:60px;font-weight:bold;">🏆 Okey!</button>
+  </div>
+  <!-- Durum + sohbet -->
+  <div style="padding:4px 8px 6px;background:rgba(0,0,0,0.3);display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <div id="okStatus" style="color:rgba(255,255,255,0.5);font-size:11px;flex:1;"></div>
+    <input id="okChatInp" placeholder="Mesaj..." style="flex:1;padding:5px 10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:16px;color:white;font-size:12px;outline:none;" onkeydown="if(event.key==='Enter')mobOkeyChatSend()">
+    <div onclick="mobOkeyChatSend()" style="color:#7dd3fc;cursor:pointer;font-size:16px;">▶</div>
+  </div>
+</div>
+
+<!-- OYUN PENCERESİ -->
+<div id="gameWin" style="display:none;flex-direction:column;height:100dvh;background:#1a1a2e;position:fixed;top:0;left:0;width:100%;z-index:70;">
+  <div style="background:linear-gradient(135deg,#0078d4,#005a9e);padding:10px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;">
+    <div onclick="closeGameWin()" style="color:white;font-size:22px;cursor:pointer;padding:4px 8px;">‹</div>
+    <div id="gameWinTitle" style="color:white;font-size:15px;font-weight:bold;">Oyun</div>
+  </div>
+  <div id="gameWinBody" style="flex:1;overflow:auto;padding:12px;color:white;"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+// ── STATE ──
+let token = localStorage.getItem('oml_token');
+let me = JSON.parse(localStorage.getItem('oml_user') || 'null');
+let contacts = [];
+let cur = null;
+let socket = null;
+let typingTimer = null;
+
+// ── BAŞLANGIÇ ──
+if (token && me) {
+  showMain();
+  connectSocket();
+  loadContacts();
+} else {
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// ── GİRİŞ / KAYIT ──
+function showReg() {
+  document.getElementById('loginForm').style.display = 'none';
+  document.getElementById('regForm').style.display = 'block';
+}
+function showLogin() {
+  document.getElementById('regForm').style.display = 'none';
+  document.getElementById('loginForm').style.display = 'block';
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!email || !pass) { document.getElementById('loginErr').textContent = 'Tüm alanları doldurun'; return; }
+  try {
+    const r = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pass}) });
+    const d = await r.json();
+    if (!r.ok) { document.getElementById('loginErr').textContent = d.error || 'Hata'; return; }
+    token = d.token; me = d.user;
+    localStorage.setItem('oml_token', token);
+    localStorage.setItem('oml_user', JSON.stringify(me));
+    showMain();
+    connectSocket();
+    loadContacts();
+  } catch(e) { document.getElementById('loginErr').textContent = 'Bağlantı hatası'; }
+}
+
+async function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPass').value;
+  if (!name || !email || !pass) { document.getElementById('regErr').textContent = 'Tüm alanları doldurun'; return; }
+  if (pass.length < 6) { document.getElementById('regErr').textContent = 'Şifre en az 6 karakter olmalı'; return; }
+  try {
+    const r = await fetch('/api/register', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({email, password: pass, displayName: name}) });
+    const d = await r.json();
+    if (!r.ok) { document.getElementById('regErr').textContent = d.error || 'Hata'; return; }
+    showToast('Kayıt başarılı! Giriş yapın');
+    showLogin();
+  } catch(e) { document.getElementById('regErr').textContent = 'Bağlantı hatası'; }
+}
+
+function doLogout() {
+  if (socket) socket.disconnect();
+  localStorage.removeItem('oml_token');
+  localStorage.removeItem('oml_user');
+  location.reload();
+}
+
+// ── ANA EKRAN ──
+function showMain() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainScreen').style.display = 'flex';
+  if (me) {
+    document.getElementById('myName').textContent = me.displayName || me.email;
+    setAvEl(document.getElementById('myAv'), me.avatar);
+  }
+}
+
+function setAvEl(el, av) {
+  if (!av || av.length < 2) { el.textContent = '🧑'; return; }
+  if (av.startsWith('data:image') || av.startsWith('http')) {
+    el.innerHTML = `<img src="${av}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+  } else {
+    el.textContent = av;
+  }
+}
+
+// ── KİŞİLER ──
+async function loadContacts() {
+  try {
+    const r = await fetch('/api/contacts', { headers: {Authorization: 'Bearer ' + token} });
+    contacts = await r.json();
+    renderContacts();
+  } catch(e) {}
+}
+
+function renderContacts(filter = '') {
+  const list = document.getElementById('contactList');
+  const q = filter.toLowerCase();
+  const filtered = q ? contacts.filter(c => c.displayName.toLowerCase().includes(q) || c.email.toLowerCase().includes(q)) : contacts;
+  const online = filtered.filter(c => c.status !== 'offline');
+  const offline = filtered.filter(c => c.status === 'offline');
+  let html = '';
+  if (online.length) {
+    html += `<div class="group-header">● Çevrimiçi (${online.length})</div>`;
+    online.forEach(c => { html += contactHTML(c); });
+  }
+  if (offline.length) {
+    html += `<div class="group-header offline">● Kapalı (${offline.length})</div>`;
+    offline.forEach(c => { html += contactHTML(c, true); });
+  }
+  if (!filtered.length) html = '<div style="padding:20px;text-align:center;color:#aaa;font-size:14px;">Kişi bulunamadı</div>';
+  list.innerHTML = html;
+}
+
+function contactHTML(c, dim = false) {
+  const dot = c.status === 'online' ? '#44cc44' : (c.status === 'away' ? '#ffaa00' : '#bbb');
+  const avContent = (c.avatar && (c.avatar.startsWith('data:') || c.avatar.startsWith('http')))
+    ? `<img src="${c.avatar}" style="width:44px;height:44px;object-fit:cover;">`
+    : `<span style="font-size:26px;">${c.avatar || '🧑'}</span>`;
+  const safe = JSON.stringify({id:c._id, name:c.displayName, av:c.avatar||'🧑', status:c.status, pm:c.personalMsg||''});
+  return `<div class="contact-item" onclick='openChat(${safe})' style="${dim?'opacity:0.55':''}">
+    <div class="contact-av">
+      <div class="contact-av-img">${avContent}</div>
+      <div class="contact-dot" style="background:${dot}"></div>
+    </div>
+    <div class="contact-info">
+      <div class="contact-name">${c.displayName}</div>
+      <div class="contact-msg">${c.personalMsg || c.email}</div>
+    </div>
+  </div>`;
+}
+
+function filterContacts(q) { renderContacts(q); }
+
+// ── SOHBET ──
+async function openChat(c) {
+  cur = c;
+  document.getElementById('chatScreen').style.display = 'flex';
+  document.getElementById('chatName').textContent = c.name;
+  document.getElementById('chatStatus').textContent = c.status === 'online' ? '● Çevrimiçi' : (c.status === 'away' ? '● Uzakta' : '● Kapalı');
+  setAvEl(document.getElementById('chatAv'), c.av);
+  // Mesajları yükle
+  const msgsEl = document.getElementById('messages');
+  msgsEl.innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">Yükleniyor...</div>';
+  try {
+    const r = await fetch(`/api/messages/${c.id}`, { headers: {Authorization: 'Bearer ' + token} });
+    const msgs = await r.json();
+    msgsEl.innerHTML = '';
+    msgs.forEach(m => appendMsg(m));
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  } catch(e) { msgsEl.innerHTML = ''; }
+  document.getElementById('msgInput').focus();
+}
+
+function closeChat() {
+  document.getElementById('chatScreen').style.display = 'none';
+  cur = null;
+}
+
+function appendMsg(m) {
+  const msgsEl = document.getElementById('messages');
+  const isMe = m.from && (m.from._id === me.id || m.from === me.id || m.from?._id === me.id);
+  const div = document.createElement('div');
+  div.className = 'msg-row ' + (isMe ? 'me' : 'them');
+  if (m.type === 'file') {
+    div.innerHTML = `<div class="msg-file">📎 <span style="font-size:13px;color:#333;">${m.fileName||'Dosya'}</span></div>`;
+  } else {
+    const t = (m.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    div.innerHTML = `<div class="msg-bubble">${t}</div>`;
+  }
+  msgsEl.appendChild(div);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function sendMessage() {
+  const ta = document.getElementById('msgInput');
+  const text = ta.value.trim();
+  if (!text || !cur) return;
+  socket.emit('message:send', { to: cur.id, text, type: 'text' });
+  appendMsg({ from: me.id, text, type: 'text' });
+  ta.value = '';
+  ta.style.height = 'auto';
+}
+
+function emitTyping() {
+  if (!cur || !socket) return;
+  socket.emit('typing:start', { to: cur.id });
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => socket.emit('typing:stop', { to: cur.id }), 2000);
+}
+
+// ── SOCKET ──
+function connectSocket() {
+  socket = io();
+  socket.on('connect', () => {
+    socket.emit('user:join', { token });
+  });
+
+  socket.on('message:receive', (msg) => {
+    if (cur && msg.from && (msg.from._id === cur.id || msg.from === cur.id)) {
+      appendMsg(msg);
+    } else {
+      // Bildirim - kim gönderdi?
+      const sender = contacts.find(c => c._id === (msg.from?._id || msg.from));
+      showToast('💬 ' + (sender ? sender.displayName : 'Birisi') + ': ' + (msg.text || '').substring(0, 30));
+    }
+  });
+
+  socket.on('user:updated', (data) => {
+    const c = contacts.find(c => c._id === data.id);
+    if (c) { Object.assign(c, data); renderContacts(); }
+    if (me && data.id === me.id) {
+      me = { ...me, ...data };
+      localStorage.setItem('oml_user', JSON.stringify(me));
+      showMain();
+    }
+  });
+
+  socket.on('status:change', (data) => {
+    const c = contacts.find(c => c._id === data.userId);
+    if (c) { c.status = data.status; renderContacts(); }
+  });
+
+  socket.on('contact:added', () => { loadContacts(); });
+
+  socket.on('typing:receive', (data) => {
+    if (cur && data.from === cur.id) {
+      document.getElementById('typingInd').style.display = 'block';
+      document.getElementById('typingInd').textContent = (cur.name || '') + ' yazıyor...';
+    }
+  });
+
+  socket.on('typing:stop', (data) => {
+    if (cur && data.from === cur.id) {
+      document.getElementById('typingInd').style.display = 'none';
+    }
+  });
+  setupOkeySocketEvents();
+}
+
+// ── KİŞİ EKLE ──
+function openAddModal() { document.getElementById('addModal').style.display = 'flex'; }
+function closeAddModal() { document.getElementById('addModal').style.display = 'none'; document.getElementById('addErr').textContent = ''; document.getElementById('addEmail').value = ''; }
+
+async function doAdd() {
+  const email = document.getElementById('addEmail').value.trim();
+  if (!email) { document.getElementById('addErr').textContent = 'E-posta girin'; return; }
+  try {
+    const r = await fetch('/api/contacts/request', { method: 'POST', headers: {'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({email}) });
+    const d = await r.json();
+    if (!r.ok) { document.getElementById('addErr').textContent = d.error || 'Hata'; return; }
+    showToast('İstek gönderildi!');
+    closeAddModal();
+    loadContacts();
+  } catch(e) { document.getElementById('addErr').textContent = 'Bağlantı hatası'; }
+}
+
+// ── YARDIMCI ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => t.style.opacity = '0', 3000);
+}
+
+// ── OYUNLAR ──
+function openGames() { document.getElementById('gamesScreen').style.display = 'flex'; }
+function closeGames() { document.getElementById('gamesScreen').style.display = 'none'; }
+function closeGameWin() { document.getElementById('gameWin').style.display = 'none'; }
+
+// ── OKEY ──
+let okRoomId=null, okMyHand=[], okBoard=[[],[],[],[]], okSelected=null, okIsMyTurn=false, okOppId=null;
+const OK_COLORS={1:'#e74c3c',2:'#2980b9',3:'#27ae60',4:'#8e44ad'};
+
+function mobOkeyInvite(){
+  if(!cur){showToast('Önce bir kişi seç!');closeGames();return;}
+  closeGames();
+  okOppId=cur.id;
+  socket.emit('okey:invite',{to:cur.id});
+  document.getElementById('okeyInviteMsg').textContent='🀄 Davet Gönderildi';
+  document.getElementById('okeyInviteSub').textContent=cur.name+' bekleniyor...';
+  document.getElementById('okeyAcceptBtn').style.display='none';
+  document.getElementById('okeyInviteModal').style.display='flex';
+}
+function mobOkeyAccept(){
+  socket.emit('okey:accept',{to:okOppId});
+  document.getElementById('okeyInviteModal').style.display='none';
+}
+function mobOkeyDecline(){
+  if(okOppId)socket.emit('okey:decline',{to:okOppId});
+  document.getElementById('okeyInviteModal').style.display='none';
+  okOppId=null;
+}
+function mobOkeyLeave(){
+  document.getElementById('okeyScreen').style.display='none';
+  okRoomId=null;okMyHand=[];okBoard=[[],[],[],[]];okSelected=null;
+}
+function mobOkeyStart(state){
+  document.getElementById('okeyInviteModal').style.display='none';
+  document.getElementById('okeyScreen').style.display='flex';
+  okRoomId=state.roomId;
+  okMyHand=state.hand||[];
+  okBoard=[[],[],[],[]];
+  okSelected=null;
+  okIsMyTurn=state.myTurn;
+  const opp=state.opponent;
+  document.getElementById('okOppName').textContent=opp?.name||'Rakip';
+  mobOkeyRender(state);
+}
+function mobOkeyRender(state){
+  if(state){
+    okIsMyTurn=state.myTurn;
+    if(state.hand)okMyHand=state.hand;
+    document.getElementById('okTurn').textContent=state.myTurn?'🟢 Senin sıran':'⏳ Bekle';
+    document.getElementById('okStatus').textContent=state.myTurn?'Taş çek veya at':'Rakip oynuyor...';
+    if(state.okeyTile){const t=state.okeyTile;document.getElementById('okOkeyTile').textContent=t.num+(t.color===1?'🔴':t.color===2?'🔵':t.color===3?'🟢':'🟣');}
+    const disc=document.getElementById('okDiscard');
+    if(state.lastDiscard){const t=state.lastDiscard;const c=OK_COLORS[t.color]||'#555';disc.innerHTML=`<div style="width:32px;height:48px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${c};font-size:13px;">${t.num}</div>`;}
+    else disc.innerHTML='';
+    const cnt=state.opponentHandCount||0;
+    document.getElementById('okOppCount').textContent=cnt+' taş';
+    document.getElementById('okOppHand').innerHTML=Array(Math.min(cnt,14)).fill('<div style="width:16px;height:26px;background:linear-gradient(135deg,#1565c0,#0d47a1);border-radius:3px;border:1px solid #42a5f5;"></div>').join('');
+  }
+  // El
+  const handEl=document.getElementById('okHand');
+  handEl.innerHTML='';
+  okMyHand.forEach((t,i)=>{
+    const d=document.createElement('div');
+    const sel=okSelected===i;
+    const c=OK_COLORS[t.color]||'#555';
+    d.style.cssText=`width:34px;height:48px;background:${sel?'#ffd700':'linear-gradient(135deg,#fff,#f0f0f0)'};border-radius:5px;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${sel?'#333':c};border:2px solid ${sel?'#ff8c00':c};cursor:pointer;font-size:12px;flex-shrink:0;transform:${sel?'translateY(-6px)':'none'};`;
+    d.textContent=t.num;
+    d.onclick=()=>{okSelected=(okSelected===i)?null:i;mobOkeyRender(null);};
+    handEl.appendChild(d);
+  });
+  // Tahta
+  for(let r=0;r<4;r++){
+    const rowEl=document.getElementById('okRow'+r);
+    rowEl.innerHTML='';
+    okBoard[r].forEach((t,i)=>{
+      const d=document.createElement('div');
+      const c=OK_COLORS[t.color]||'#555';
+      d.style.cssText=`width:26px;height:36px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:bold;color:${c};border:1px solid ${c};cursor:pointer;font-size:10px;`;
+      d.textContent=t.num;
+      d.ondblclick=()=>{okMyHand.push(okBoard[r].splice(i,1)[0]);mobOkeyRender(null);};
+      rowEl.appendChild(d);
+    });
+  }
+}
+function mobOkeyDraw(){if(!okIsMyTurn||!okRoomId){showToast('Senin sıran değil');return;}socket.emit('okey:draw',{roomId:okRoomId});}
+function mobOkeyTakeDiscard(){if(!okIsMyTurn||!okRoomId){showToast('Senin sıran değil');return;}socket.emit('okey:takeDiscard',{roomId:okRoomId});}
+function mobOkeyDiscard(){
+  if(!okIsMyTurn){showToast('Senin sıran değil');return;}
+  if(okSelected===null){showToast('Önce bir taş seç');return;}
+  const tile=okMyHand.splice(okSelected,1)[0];
+  okSelected=null;
+  socket.emit('okey:discard',{roomId:okRoomId,tile});
+  mobOkeyRender(null);
+}
+function mobOkeyMoveToBoard(){
+  if(okSelected===null){showToast('Önce bir taş seç');return;}
+  const emptyRow=okBoard.findIndex(r=>r.length<13);
+  if(emptyRow===-1){showToast('Tahta dolu');return;}
+  okBoard[emptyRow].push(okMyHand.splice(okSelected,1)[0]);
+  okSelected=null;mobOkeyRender(null);
+}
+function mobOkeyDropRow(row){
+  if(okSelected===null)return;
+  if(okBoard[row].length>=13){showToast('Bu satır dolu');return;}
+  okBoard[row].push(okMyHand.splice(okSelected,1)[0]);
+  okSelected=null;mobOkeyRender(null);
+}
+function mobOkeyRecall(){okBoard.forEach(r=>{while(r.length)okMyHand.push(r.pop());});okBoard=[[],[],[],[]];okSelected=null;mobOkeyRender(null);}
+function mobOkeySort(){okMyHand.sort((a,b)=>a.color-b.color||a.num-b.num);mobOkeyRender(null);}
+function mobOkeyWin(){if(!okRoomId)return;socket.emit('okey:win',{roomId:okRoomId});}
+function mobOkeyChatSend(){
+  const inp=document.getElementById('okChatInp');
+  const text=inp.value.trim();
+  if(!text||!okOppId)return;
+  socket.emit('okey:chat',{to:okOppId,text});
+  showToast('Sen: '+text);
+  inp.value='';
+}
+function setupOkeySocketEvents(){
+  socket.on('okey:invited',(data)=>{
+    okOppId=data.from;
+    const sender=contacts.find(c=>c._id===data.from);
+    document.getElementById('okeyInviteMsg').textContent='🀄 Okey Daveti!';
+    document.getElementById('okeyInviteSub').textContent=(sender?.displayName||'Birisi')+' seni oynamaya davet etti!';
+    document.getElementById('okeyAcceptBtn').style.display='inline-block';
+    document.getElementById('okeyInviteModal').style.display='flex';
+  });
+  socket.on('okey:declined',()=>{document.getElementById('okeyInviteModal').style.display='none';showToast('❌ Davet reddedildi');});
+  socket.on('okey:start',(state)=>{mobOkeyStart(state);});
+  socket.on('okey:state',(state)=>{mobOkeyRender(state);});
+  socket.on('okey:gameover',(data)=>{
+    const won=data.winner===me.id;
+    showToast(won?'🏆 Kazandın!':'😔 Kaybettin!');
+    setTimeout(()=>mobOkeyLeave(),2500);
+  });
+  socket.on('okey:chat',(data)=>{
+    const sender=contacts.find(c=>c._id===data.from);
+    showToast('💬 '+(sender?.displayName||'Rakip')+': '+data.text);
+  });
+}
+
+function launchGame(name) {
+  closeGames();
+  const titles = {tictactoe:'⭕ XOX', memory:'🃏 Hafıza', rps:'✊ Taş Kağıt Makas', word:'📝 Kelime Bul', snake:'🐍 Yılan', '2048':'🔢 2048'};
+  document.getElementById('gameWinTitle').textContent = titles[name] || 'Oyun';
+  document.getElementById('gameWin').style.display = 'flex';
+  const body = document.getElementById('gameWinBody');
+  if (name === 'tictactoe') buildTTT(body);
+  else if (name === 'memory') buildMemory(body);
+  else if (name === 'rps') buildRPS(body);
+  else if (name === 'word') buildWord(body);
+  else if (name === 'snake') buildSnake(body);
+  else if (name === '2048') build2048(body);
+}
+
+// ── XOX ──
+function buildTTT(el) {
+  let board = Array(9).fill(''), turn = 'X', scores = {X:0, O:0};
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  function checkWin(b, p) { return wins.some(w => w.every(i => b[i] === p)); }
+  function render() {
+    el.innerHTML = `
+      <div style="text-align:center;padding:8px 0;">
+        <div style="color:rgba(255,255,255,0.6);font-size:13px;margin-bottom:12px;">Sen: X &nbsp;|&nbsp; Bilgisayar: O</div>
+        <div style="display:inline-grid;grid-template-columns:repeat(3,80px);gap:6px;margin-bottom:16px;">
+          ${board.map((c,i) => `<div onclick="tttClick(${i})" style="width:80px;height:80px;background:rgba(255,255,255,0.08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);">${c}</div>`).join('')}
+        </div>
+        <div id="tttMsg" style="color:#7dd3fc;font-size:15px;min-height:24px;margin-bottom:12px;"></div>
+        <button onclick="tttReset()" style="padding:10px 24px;background:#0078d4;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">🔄 Yeniden</button>
+        <div style="margin-top:12px;color:rgba(255,255,255,0.5);font-size:13px;">X: ${scores.X} | O: ${scores.O}</div>
+      </div>`;
+  }
+  window.tttClick = function(i) {
+    if (board[i] || checkWin(board,'X') || checkWin(board,'O')) return;
+    board[i] = 'X';
+    if (checkWin(board,'X')) { scores.X++; render(); document.getElementById('tttMsg').textContent = '🎉 Kazandın!'; return; }
+    if (board.every(c=>c)) { render(); document.getElementById('tttMsg').textContent = '🤝 Beraberlik!'; return; }
+    // Bilgisayar
+    let best = -1;
+    // Önce kazan, sonra engelle, sonra rastgele
+    for (let w of wins) { if (w.filter(i=>board[i]==='O').length===2 && w.some(i=>!board[i])) { best = w.find(i=>!board[i]); break; } }
+    if (best === -1) for (let w of wins) { if (w.filter(i=>board[i]==='X').length===2 && w.some(i=>!board[i])) { best = w.find(i=>!board[i]); break; } }
+    if (best === -1) { const empty = board.map((c,i)=>c?-1:i).filter(i=>i>=0); best = empty[Math.floor(Math.random()*empty.length)]; }
+    board[best] = 'O';
+    render();
+    if (checkWin(board,'O')) { scores.O++; render(); document.getElementById('tttMsg').textContent = '😔 Bilgisayar kazandı!'; }
+    else if (board.every(c=>c)) { render(); document.getElementById('tttMsg').textContent = '🤝 Beraberlik!'; }
+  };
+  window.tttReset = function() { board = Array(9).fill(''); turn = 'X'; render(); };
+  render();
+}
+
+// ── HAFIZA ──
+function buildMemory(el) {
+  const emojis = ['🍎','🍌','🍇','🍓','🍔','🍕','🎸','🎮','⚽','🏀','🚗','🌟'];
+  let cards = [...emojis,...emojis].sort(()=>Math.random()-0.5).map((e,i)=>({id:i,emoji:e,flipped:false,matched:false}));
+  let first=null, second=null, moves=0, locked=false;
+  function render() {
+    el.innerHTML = `<div style="text-align:center;">
+      <div style="color:rgba(255,255,255,0.5);font-size:13px;margin-bottom:10px;">Hamle: ${moves}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:320px;margin:0 auto;">
+        ${cards.map(c=>`<div onclick="memClick(${c.id})" style="aspect-ratio:1;background:${c.flipped||c.matched?'rgba(100,180,255,0.2)':'rgba(255,255,255,0.1)'};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);transition:all 0.2s;">${c.flipped||c.matched?c.emoji:'❓'}</div>`).join('')}
+      </div>
+      <div id="memMsg" style="color:#7dd3fc;font-size:14px;margin-top:12px;min-height:20px;"></div>
+      <button onclick="buildMemory(document.getElementById('gameWinBody'))" style="margin-top:10px;padding:9px 20px;background:#0078d4;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;">🔄 Yeniden</button>
+    </div>`;
+  }
+  window.memClick = function(id) {
+    if (locked) return;
+    const c = cards[id];
+    if (c.flipped || c.matched) return;
+    c.flipped = true;
+    if (!first) { first = c; render(); return; }
+    second = c; moves++; locked = true; render();
+    if (first.emoji === second.emoji) {
+      first.matched = second.matched = true;
+      first = second = null; locked = false; render();
+      if (cards.every(c=>c.matched)) document.getElementById('memMsg').textContent = `🎉 Tebrikler! ${moves} hamlede tamamladın!`;
+    } else {
+      setTimeout(() => { first.flipped = second.flipped = false; first = second = null; locked = false; render(); }, 1000);
+    }
+  };
+  render();
+}
+
+// ── TAŞ KAĞIT MAKAS ──
+function buildRPS(el) {
+  const opts = [{v:'taş',e:'✊'},{v:'kağıt',e:'✋'},{v:'makas',e:'✌️'}];
+  let scores = {sen:0, bi:0};
+  function play(choice) {
+    const bi = opts[Math.floor(Math.random()*3)];
+    const sen = opts.find(o=>o.v===choice);
+    let result = '';
+    if (sen.v === bi.v) result = '🤝 Beraberlik!';
+    else if ((sen.v==='taş'&&bi.v==='makas')||(sen.v==='kağıt'&&bi.v==='taş')||(sen.v==='makas'&&bi.v==='kağıt')) { result = '🎉 Kazandın!'; scores.sen++; }
+    else { result = '😔 Kaybettin!'; scores.bi++; }
+    render(sen.e, bi.e, result);
+  }
+  function render(se='?', be='?', res='') {
+    el.innerHTML = `<div style="text-align:center;padding:8px;">
+      <div style="display:flex;justify-content:center;gap:40px;margin-bottom:20px;">
+        <div><div style="font-size:52px;">${se}</div><div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:4px;">Sen</div></div>
+        <div style="color:rgba(255,255,255,0.3);font-size:24px;align-self:center;">VS</div>
+        <div><div style="font-size:52px;">${be}</div><div style="color:rgba(255,255,255,0.5);font-size:12px;margin-top:4px;">Bilgisayar</div></div>
+      </div>
+      <div style="color:#7dd3fc;font-size:18px;font-weight:bold;margin-bottom:20px;min-height:28px;">${res}</div>
+      <div style="display:flex;justify-content:center;gap:16px;margin-bottom:16px;">
+        ${opts.map(o=>`<div onclick="rpsPlay('${o.v}')" style="width:80px;height:80px;background:rgba(255,255,255,0.08);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;border:1px solid rgba(255,255,255,0.15);">${o.e}</div>`).join('')}
+      </div>
+      <div style="color:rgba(255,255,255,0.4);font-size:13px;">Sen: ${scores.sen} | Bilgisayar: ${scores.bi}</div>
+    </div>`;
+  }
+  window.rpsPlay = play;
+  render();
+}
+
+// ── KELİME BUL ──
+function buildWord(el) {
+  const words = ['ELMA','ARABA','OKUL','KEDI','KITAP','DENIZ','GUNES','YILDIZ','BAHCE','KAPAK','KALEM','MASA','SANDALYE','PENCERE','BILGISAYAR'];
+  let word = words[Math.floor(Math.random()*words.length)];
+  let guessed = new Set(), wrong = 0, maxWrong = 6;
+  function render() {
+    const display = word.split('').map(c => guessed.has(c) ? c : '_').join(' ');
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZÇĞİÖŞÜ'.split('');
+    const won = word.split('').every(c => guessed.has(c));
+    const lost = wrong >= maxWrong;
+    el.innerHTML = `<div style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">${'❤️'.repeat(maxWrong-wrong)}${'🖤'.repeat(wrong)}</div>
+      <div style="font-size:28px;letter-spacing:8px;color:white;font-weight:bold;margin-bottom:16px;font-family:monospace;">${display}</div>
+      ${won ? `<div style="color:#4ade80;font-size:18px;margin-bottom:12px;">🎉 Tebrikler! "${word}" doğru!</div>` : ''}
+      ${lost ? `<div style="color:#f87171;font-size:16px;margin-bottom:12px;">😔 Kelime: "${word}"</div>` : ''}
+      <div style="display:flex;flex-wrap:wrap;gap:5px;justify-content:center;max-width:300px;margin:0 auto 14px;">
+        ${alphabet.map(c=>`<div onclick="wordGuess('${c}')" style="width:34px;height:34px;background:${guessed.has(c)?'rgba(255,255,255,0.05)':'rgba(255,255,255,0.12)'};border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:bold;cursor:pointer;color:${guessed.has(c)?'rgba(255,255,255,0.2)':'white'};border:1px solid rgba(255,255,255,0.1);">${c}</div>`).join('')}
+      </div>
+      <button onclick="buildWord(document.getElementById('gameWinBody'))" style="padding:9px 20px;background:#0078d4;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;">🔄 Yeni Kelime</button>
+    </div>`;
+  }
+  window.wordGuess = function(c) {
+    if (guessed.has(c)) return;
+    guessed.add(c);
+    if (!word.includes(c)) wrong++;
+    render();
+  };
+  render();
+}
+
+// ── YILAN ──
+function buildSnake(el) {
+  el.innerHTML = `<div style="text-align:center;">
+    <div id="snakeScore" style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:8px;">Skor: 0</div>
+    <canvas id="snakeCanvas" width="300" height="300" style="background:#0a0a1a;border-radius:10px;border:1px solid rgba(255,255,255,0.2);display:block;margin:0 auto;"></canvas>
+    <div id="snakeMsg" style="color:#7dd3fc;font-size:14px;margin:10px 0;min-height:20px;"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,60px);gap:6px;justify-content:center;margin-top:8px;">
+      <div></div>
+      <div onclick="snakeDir(0,-1)" style="background:rgba(255,255,255,0.1);border-radius:8px;height:50px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">⬆️</div>
+      <div></div>
+      <div onclick="snakeDir(-1,0)" style="background:rgba(255,255,255,0.1);border-radius:8px;height:50px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">⬅️</div>
+      <div onclick="snakeDir(0,1)" style="background:rgba(255,255,255,0.1);border-radius:8px;height:50px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">⬇️</div>
+      <div onclick="snakeDir(1,0)" style="background:rgba(255,255,255,0.1);border-radius:8px;height:50px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;">➡️</div>
+    </div>
+    <button onclick="snakeStart()" style="margin-top:12px;padding:9px 22px;background:#0078d4;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;">▶ Başla</button>
+  </div>`;
+  const C = document.getElementById('snakeCanvas');
+  const ctx = C.getContext('2d');
+  const SZ = 15, W = 20, H = 20;
+  let snake, dir, food, score, interval, running = false;
+  function init() {
+    snake = [{x:10,y:10}]; dir = {x:1,y:0}; score = 0;
+    food = {x:Math.floor(Math.random()*W), y:Math.floor(Math.random()*H)};
+    draw();
+  }
+  function draw() {
+    ctx.fillStyle = '#0a0a1a'; ctx.fillRect(0,0,300,300);
+    ctx.fillStyle = '#4ade80';
+    snake.forEach(s => { ctx.fillRect(s.x*SZ,s.y*SZ,SZ-1,SZ-1); });
+    ctx.fillStyle = '#f87171';
+    ctx.fillRect(food.x*SZ, food.y*SZ, SZ-1, SZ-1);
+  }
+  function step() {
+    const head = {x: snake[0].x+dir.x, y: snake[0].y+dir.y};
+    if (head.x<0||head.x>=W||head.y<0||head.y>=H||snake.some(s=>s.x===head.x&&s.y===head.y)) {
+      clearInterval(interval); running=false;
+      document.getElementById('snakeMsg').textContent = `💀 Oyun bitti! Skor: ${score}`;
+      return;
+    }
+    snake.unshift(head);
+    if (head.x===food.x&&head.y===food.y) {
+      score++; document.getElementById('snakeScore').textContent = 'Skor: '+score;
+      food = {x:Math.floor(Math.random()*W), y:Math.floor(Math.random()*H)};
+    } else snake.pop();
+    draw();
+  }
+  window.snakeStart = function() {
+    if (running) clearInterval(interval);
+    running = true;
+    document.getElementById('snakeMsg').textContent = '';
+    init();
+    interval = setInterval(step, 150);
+  };
+  window.snakeDir = function(dx,dy) {
+    if (!running) return;
+    if (dx===0&&dir.x===0) return; if (dy===0&&dir.y===0) return;
+    dir = {x:dx, y:dy};
+  };
+  init();
+}
+
+// ── 2048 ──
+function build2048(el) {
+  let board, score;
+  function init() {
+    board = Array(4).fill(null).map(()=>Array(4).fill(0));
+    score = 0;
+    addTile(); addTile(); render();
+  }
+  function addTile() {
+    const empty = [];
+    board.forEach((r,i)=>r.forEach((c,j)=>{ if(!c) empty.push([i,j]); }));
+    if (!empty.length) return;
+    const [r,c] = empty[Math.floor(Math.random()*empty.length)];
+    board[r][c] = Math.random()<0.9?2:4;
+  }
+  const colors = {0:'#1a1a2e',2:'#3b4a6b',4:'#4a5a7b',8:'#e67e22',16:'#e74c3c',32:'#9b59b6',64:'#2980b9',128:'#27ae60',256:'#f39c12',512:'#d35400',1024:'#c0392b',2048:'#8e44ad'};
+  function render() {
+    el.innerHTML = `<div style="text-align:center;max-width:320px;margin:0 auto;">
+      <div style="color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:8px;">Skor: ${score}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;background:rgba(255,255,255,0.05);padding:8px;border-radius:12px;margin-bottom:12px;">
+        ${board.flat().map(v=>`<div style="aspect-ratio:1;background:${colors[v]||'#8e44ad'};border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:${v>=1000?16:v>=100?18:22}px;font-weight:bold;color:white;">${v||''}</div>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:8px;">
+        <button onclick="g2048('ArrowLeft')" style="padding:10px 14px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:8px;font-size:18px;cursor:pointer;">⬅️</button>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button onclick="g2048('ArrowUp')" style="padding:8px 14px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:8px;font-size:18px;cursor:pointer;">⬆️</button>
+          <button onclick="g2048('ArrowDown')" style="padding:8px 14px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:8px;font-size:18px;cursor:pointer;">⬇️</button>
+        </div>
+        <button onclick="g2048('ArrowRight')" style="padding:10px 14px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:8px;font-size:18px;cursor:pointer;">➡️</button>
+      </div>
+      <button onclick="build2048(document.getElementById('gameWinBody'))" style="padding:9px 20px;background:#0078d4;color:white;border:none;border-radius:10px;font-size:13px;cursor:pointer;">🔄 Yeniden</button>
+    </div>`;
+  }
+  function slide(row) {
+    let r = row.filter(x=>x);
+    for (let i=0;i<r.length-1;i++) { if(r[i]===r[i+1]){r[i]*=2;score+=r[i];r.splice(i+1,1);} }
+    while (r.length<4) r.push(0);
+    return r;
+  }
+  window.g2048 = function(dir) {
+    let moved = false;
+    const prev = board.map(r=>[...r]);
+    if (dir==='ArrowLeft') board = board.map(r=>slide(r));
+    else if (dir==='ArrowRight') board = board.map(r=>slide([...r].reverse()).reverse());
+    else if (dir==='ArrowUp') {
+      for(let c=0;c<4;c++){let col=board.map(r=>r[c]);col=slide(col);board.forEach((r,i)=>r[c]=col[i]);}
+    } else {
+      for(let c=0;c<4;c++){let col=board.map(r=>r[c]).reverse();col=slide(col).reverse();board.forEach((r,i)=>r[c]=col[i]);}
+    }
+    if (JSON.stringify(board)!==JSON.stringify(prev)){addTile();moved=true;}
+    render();
+    if (board.flat().includes(2048)) el.insertAdjacentHTML('beforeend','<div style="color:#ffd700;font-size:20px;text-align:center;margin-top:8px;">🏆 2048!</div>');
+  };
+  init();
+}
+</script>
+</body>
+</html>
