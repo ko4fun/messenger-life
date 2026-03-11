@@ -16,6 +16,7 @@ const io     = new Server(server, { cors: { origin: '*' } });
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const storage = multer.diskStorage({
@@ -357,6 +358,11 @@ io.on('connection', (socket) => {
     okeyGames.delete(roomId);
   });
 
+  socket.on('okey:chat', ({ to, text }) => {
+    const toSocket = onlineUsers.get(to);
+    if (toSocket) io.to(toSocket).emit('okey:chat', { from: socket.userId, text });
+  });
+
   // Bağlantı kesildi
   socket.on('disconnect', async () => {
     if (!socket.userId) return;
@@ -431,4 +437,3 @@ function okeyStateFor(game, playerId) {
     drawnThisTurn: game.drawnThisTurn
   };
 }
-
