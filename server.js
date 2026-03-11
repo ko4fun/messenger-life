@@ -124,7 +124,7 @@ app.get('/api/contacts', authMiddleware, async (req, res) => {
 
 app.post('/api/contacts/request', authMiddleware, async (req, res) => {
   try {
-    const toUser = await User.findOne({ email: req.body.toEmail });
+    const toUser = await User.findOne({ email: req.body.toEmail.toLowerCase().trim() });
     if (!toUser) return res.status(404).json({ error: 'Kullanıcı bulunamadı' });
     if (toUser._id.toString() === req.user.id) return res.status(400).json({ error: 'Kendinizi ekleyemezsiniz' });
     if (await ContactRequest.findOne({ from: req.user.id, to: toUser._id, status: 'pending' }))
