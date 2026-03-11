@@ -657,55 +657,94 @@ body{font-family:Tahoma,sans-serif;background:#1a1a2e;min-height:100vh;display:f
 #gameWinBody{color:rgba(200,230,255,0.9);font-family:Tahoma,sans-serif;}
 
 /* ── OKEY OYUNU ── */
-.ok-win{width:680px;background:linear-gradient(160deg,#0a1e10,#0d2a14,#061a0a);border:2px solid rgba(50,180,80,0.4);border-radius:12px;box-shadow:0 24px 64px rgba(0,0,0,0.9);overflow:hidden;animation:dpOpen 0.2s cubic-bezier(.34,1.56,.64,1);}
-.ok-screen{padding:20px;text-align:center;}
+.ok-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8800;display:flex;align-items:center;justify-content:center;}
+/* Ana Okey Penceresi */
+.ok-win{width:960px;max-height:95vh;background:linear-gradient(160deg,#0d1f0a,#162810,#0a1a08);border:2px solid rgba(60,160,60,0.5);border-radius:14px;box-shadow:0 0 80px rgba(0,0,0,0.95),0 0 30px rgba(40,140,40,0.2);overflow:hidden;display:flex;flex-direction:column;animation:dpOpen 0.25s cubic-bezier(.34,1.56,.64,1);}
+/* Ekranlar */
+.ok-screen{padding:24px;text-align:center;}
 .ok-wait-title{font-size:18px;font-weight:bold;color:rgba(200,255,200,0.9);margin-bottom:8px;}
-.ok-wait-sub{font-size:12px;color:rgba(150,220,150,0.6);margin-bottom:16px;}
+.ok-wait-sub{font-size:12px;color:rgba(150,220,150,0.5);margin-bottom:16px;}
+/* Butonlar */
 .ok-btn{padding:8px 20px;border-radius:8px;font-size:12px;font-family:Tahoma,sans-serif;font-weight:bold;cursor:pointer;border:none;transition:all 0.15s;margin:4px;}
 .ok-accept{background:linear-gradient(135deg,#2a8a3a,#1a6a28);color:white;box-shadow:0 4px 12px rgba(40,140,60,0.4);}
 .ok-accept:hover{background:linear-gradient(135deg,#3aaa4a,#2a8a38);}
 .ok-cancel{background:rgba(180,50,50,0.3);color:#ff8888;border:1px solid rgba(180,50,50,0.4);}
 .ok-cancel:hover{background:rgba(180,50,50,0.5);}
-.ok-top{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(0,0,0,0.3);border-bottom:1px solid rgba(50,180,80,0.15);}
+/* OYUN LAYOUT */
+.ok-game-layout{display:flex;flex:1;min-height:0;overflow:hidden;}
+/* Sol: Tahta */
+.ok-board-area{flex:1;display:flex;flex-direction:column;padding:10px 12px;gap:8px;overflow-y:auto;}
+/* Üst bar: rakip + gösterge + sıra */
+.ok-topbar{display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.3);border-radius:8px;padding:8px 12px;border:1px solid rgba(60,160,60,0.15);}
 .ok-player-info{display:flex;align-items:center;gap:8px;}
-.ok-av{width:36px;height:36px;border-radius:8px;background:rgba(50,180,80,0.2);display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(50,180,80,0.3);}
+.ok-av{width:32px;height:32px;border-radius:6px;background:rgba(50,160,60,0.2);display:flex;align-items:center;justify-content:center;font-size:18px;border:1px solid rgba(60,160,60,0.3);}
 .ok-pname{font-size:12px;font-weight:bold;color:rgba(200,255,200,0.9);}
-.ok-phand{font-size:10px;color:rgba(150,220,150,0.6);}
-.ok-middle-info{display:flex;gap:10px;align-items:flex-end;}
-.ok-gosterge-box,.ok-pile-box{text-align:center;}
-.ok-info-lbl{font-size:9px;color:rgba(150,220,150,0.5);font-weight:bold;text-transform:uppercase;margin-bottom:4px;}
-.ok-turn-badge{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:bold;background:linear-gradient(135deg,rgba(50,180,80,0.3),rgba(30,140,50,0.2));border:1px solid rgba(50,180,80,0.4);color:#44ee66;}
-.ok-turn-badge.waiting{background:rgba(100,100,100,0.2);border-color:rgba(100,100,100,0.3);color:rgba(150,200,150,0.5);}
-
+.ok-phand{font-size:10px;color:rgba(120,200,120,0.5);}
+.ok-info-group{display:flex;gap:10px;align-items:flex-end;}
+.ok-info-box{text-align:center;}
+.ok-info-lbl{font-size:9px;font-weight:bold;color:rgba(120,200,120,0.45);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;}
+.ok-turn-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:bold;background:rgba(50,160,60,0.25);border:1px solid rgba(60,160,60,0.4);color:#55ee66;}
+.ok-turn-badge.waiting{background:rgba(80,80,80,0.2);border-color:rgba(80,80,80,0.3);color:rgba(140,180,140,0.5);}
+/* RAKİP EL (üstte, ters) */
+.ok-opp-hand-area{background:rgba(0,0,0,0.2);border-radius:8px;padding:8px 10px;border:1px solid rgba(60,160,60,0.08);}
+.ok-opp-hand-lbl{font-size:9px;color:rgba(120,200,120,0.4);font-weight:bold;text-transform:uppercase;margin-bottom:6px;}
+.ok-opp-hand{display:flex;gap:3px;flex-wrap:wrap;}
+/* ORTA ALAN: Deste + Atılan */
+.ok-center-area{display:flex;align-items:center;justify-content:center;gap:20px;padding:4px 0;}
+.ok-pile-label{font-size:9px;color:rgba(120,200,120,0.4);text-align:center;margin-bottom:4px;font-weight:bold;text-transform:uppercase;}
+/* DİZİM TAHTASI */
+.ok-board{background:linear-gradient(135deg,#1a3a10,#122808,#0e2006);border:2px solid rgba(60,160,60,0.3);border-radius:10px;padding:10px;box-shadow:inset 0 2px 8px rgba(0,0,0,0.5);}
+.ok-board-lbl{font-size:9px;color:rgba(120,200,120,0.4);font-weight:bold;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:6px;}
+.ok-board-rows{display:flex;flex-direction:column;gap:6px;}
+.ok-board-row{display:flex;gap:3px;align-items:center;min-height:52px;background:rgba(0,0,0,0.2);border-radius:6px;padding:4px 6px;border:1px dashed rgba(60,160,60,0.15);flex-wrap:wrap;}
+.ok-board-row-lbl{font-size:9px;color:rgba(120,200,120,0.25);min-width:12px;font-weight:bold;}
+.ok-board-slot{width:36px;height:48px;border:1px dashed rgba(60,160,60,0.2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(60,160,60,0.2);}
+/* BENİM ELİM (altta) */
+.ok-my-hand-area{background:rgba(0,0,0,0.25);border-radius:8px;padding:8px 10px;border:1px solid rgba(60,160,60,0.2);}
+.ok-hand-lbl{font-size:9px;color:rgba(120,200,120,0.5);font-weight:bold;text-transform:uppercase;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.ok-hand{display:flex;gap:3px;flex-wrap:wrap;align-items:flex-end;min-height:58px;}
+/* AKSİYON BUTONLARI */
+.ok-actions{display:flex;gap:5px;padding:6px 12px;background:rgba(0,0,0,0.2);border-top:1px solid rgba(60,160,60,0.1);flex-shrink:0;}
+.ok-draw{background:linear-gradient(135deg,rgba(40,130,60,0.4),rgba(20,100,40,0.3));color:#88ddaa;border:1px solid rgba(40,130,60,0.4);}
+.ok-draw:hover:not(:disabled){background:linear-gradient(135deg,rgba(40,130,60,0.6),rgba(20,100,40,0.5));}
+.ok-discard{background:linear-gradient(135deg,rgba(200,90,40,0.35),rgba(160,60,20,0.25));color:#ffaa66;border:1px solid rgba(200,90,40,0.35);}
+.ok-discard:hover:not(:disabled){background:linear-gradient(135deg,rgba(200,90,40,0.55),rgba(160,60,20,0.45));}
+.ok-win-btn{background:linear-gradient(135deg,rgba(220,170,20,0.45),rgba(180,130,10,0.35));color:#ffdd44;border:1px solid rgba(220,170,20,0.45);}
+.ok-win-btn:hover:not(:disabled){background:linear-gradient(135deg,rgba(220,170,20,0.65),rgba(180,130,10,0.55));}
+.ok-sort{background:rgba(80,80,180,0.2);color:#aaaaff;border:1px solid rgba(80,80,180,0.3);}
+.ok-sort:hover{background:rgba(80,80,180,0.4);}
+.ok-board-btn{background:rgba(60,120,60,0.2);color:#88cc88;border:1px solid rgba(60,120,60,0.3);}
+.ok-board-btn:hover{background:rgba(60,120,60,0.4);}
+.ok-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.ok-status{font-size:11px;color:rgba(120,200,120,0.55);padding:4px 12px 6px;text-align:center;min-height:18px;}
 /* TAŞLAR */
-.ok-tile{width:36px;height:52px;border-radius:5px;border:2px solid rgba(200,200,200,0.3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;cursor:pointer;transition:all 0.15s;position:relative;user-select:none;font-family:'Arial',sans-serif;}
-.ok-tile-sm{width:28px;height:40px;font-size:11px;}
-.ok-tile-back{background:linear-gradient(135deg,#1a5a2a,#0d3a18);border-color:rgba(50,180,80,0.4);color:rgba(100,200,120,0.8);font-size:10px;cursor:pointer;}
-.ok-tile-back:hover{background:linear-gradient(135deg,#2a7a3a,#1a5a28);transform:translateY(-2px);}
-.ok-tile[data-color="kirmizi"]{background:linear-gradient(135deg,#fff8f8,#ffe8e8);color:#cc2200;border-color:#cc4422;}
-.ok-tile[data-color="sari"]{background:linear-gradient(135deg,#fffef0,#fff8c0);color:#887700;border-color:#ccaa00;}
-.ok-tile[data-color="mavi"]{background:linear-gradient(135deg,#f0f8ff,#d8eeff);color:#0044cc;border-color:#2266cc;}
-.ok-tile[data-color="siyah"]{background:linear-gradient(135deg,#f5f5f5,#e8e8e8);color:#111111;border-color:#444444;}
-.ok-tile[data-color="okey"]{background:linear-gradient(135deg,#fff8e0,#ffee80);color:#884400;border-color:#cc8800;}
-.ok-tile.ok-tile-okey{background:linear-gradient(135deg,#fff3c0,#ffdd44) !important;border-color:#ffaa00 !important;box-shadow:0 0 8px rgba(255,200,0,0.5);}
-.ok-tile.selected{transform:translateY(-8px);box-shadow:0 6px 16px rgba(50,200,80,0.5);border-color:#44ee66 !important;}
-.ok-tile:hover:not(.ok-tile-back){transform:translateY(-4px);box-shadow:0 4px 12px rgba(0,0,0,0.3);}
-.ok-tile.selected:hover{transform:translateY(-8px);}
-
-.ok-hand-area{padding:10px 14px 4px;}
-.ok-hand-lbl{font-size:10px;color:rgba(150,220,150,0.5);font-weight:bold;text-transform:uppercase;margin-bottom:8px;}
-.ok-hand{display:flex;flex-wrap:wrap;gap:4px;min-height:60px;align-items:flex-end;background:rgba(0,0,0,0.2);border-radius:8px;padding:8px;border:1px solid rgba(50,180,80,0.1);}
-.ok-actions{display:flex;gap:6px;padding:8px 14px;border-top:1px solid rgba(50,180,80,0.1);}
-.ok-draw{background:linear-gradient(135deg,rgba(50,150,80,0.3),rgba(30,120,50,0.2));color:#88ddaa;border:1px solid rgba(50,150,80,0.3);}
-.ok-draw:hover:not(:disabled){background:linear-gradient(135deg,rgba(50,150,80,0.5),rgba(30,120,50,0.4));}
-.ok-discard{background:linear-gradient(135deg,rgba(200,100,50,0.3),rgba(160,60,30,0.2));color:#ffaa66;border:1px solid rgba(200,100,50,0.3);}
-.ok-discard:hover:not(:disabled){background:linear-gradient(135deg,rgba(200,100,50,0.5),rgba(160,60,30,0.4));}
-.ok-win-btn,.ok-win{background:linear-gradient(135deg,rgba(220,180,30,0.4),rgba(180,140,20,0.3));color:#ffdd44;border:1px solid rgba(220,180,30,0.4);}
-.ok-win:hover{background:linear-gradient(135deg,rgba(220,180,30,0.6),rgba(180,140,20,0.5));}
-.ok-sort{background:rgba(100,100,180,0.2);color:#aaaaff;border:1px solid rgba(100,100,180,0.3);}
-.ok-sort:hover{background:rgba(100,100,180,0.4);}
-.ok-btn:disabled{opacity:0.35;cursor:not-allowed;}
-.ok-status{font-size:11px;color:rgba(150,220,150,0.6);padding:6px 14px 10px;text-align:center;min-height:20px;}
+.ok-tile{width:36px;height:50px;border-radius:5px;border:2px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;cursor:pointer;transition:all 0.12s;position:relative;user-select:none;font-family:'Arial Black',Arial,sans-serif;box-shadow:0 2px 4px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.6);}
+.ok-tile-sm{width:28px;height:40px;font-size:12px;}
+.ok-tile-xs{width:22px;height:32px;font-size:10px;border-radius:3px;}
+.ok-tile-back{background:linear-gradient(135deg,#2d6e1e,#1a4a10);border-color:rgba(80,180,60,0.5);color:rgba(120,220,100,0.7);font-size:10px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+.ok-tile-back:hover{background:linear-gradient(135deg,#3a8a28,#266020);transform:translateY(-2px);}
+.ok-tile[data-color="kirmizi"]{background:linear-gradient(160deg,#fff5f5,#ffe0e0,#ffd0d0);color:#cc0000;border-color:#dd3333;text-shadow:0 1px 0 rgba(255,255,255,0.8);}
+.ok-tile[data-color="sari"]{background:linear-gradient(160deg,#fffde8,#fff9b0,#fff080);color:#886600;border-color:#ccaa00;text-shadow:0 1px 0 rgba(255,255,255,0.8);}
+.ok-tile[data-color="mavi"]{background:linear-gradient(160deg,#f0f8ff,#d8eeff,#c0e0ff);color:#0033bb;border-color:#2255cc;text-shadow:0 1px 0 rgba(255,255,255,0.8);}
+.ok-tile[data-color="siyah"]{background:linear-gradient(160deg,#f0f0f0,#e0e0e0,#d0d0d0);color:#111;border-color:#555;text-shadow:0 1px 0 rgba(255,255,255,0.8);}
+.ok-tile[data-color="okey"]{background:linear-gradient(160deg,#fff8e0,#ffe880,#ffd840);color:#aa5500;border-color:#cc8800;}
+.ok-tile.ok-tile-okey{background:linear-gradient(160deg,#ffe880,#ffd000,#ffbb00) !important;border-color:#ff9900 !important;box-shadow:0 0 10px rgba(255,180,0,0.6),0 2px 4px rgba(0,0,0,0.3);}
+.ok-tile.selected{transform:translateY(-10px);box-shadow:0 8px 20px rgba(50,220,80,0.5),0 2px 4px rgba(0,0,0,0.3);border-color:#44ff66 !important;z-index:10;}
+.ok-tile:hover:not(.ok-tile-back):not(.selected){transform:translateY(-4px);box-shadow:0 5px 12px rgba(0,0,0,0.4);}
+.ok-tile.on-board{transform:none !important;box-shadow:0 2px 4px rgba(0,0,0,0.3) !important;cursor:pointer;}
+.ok-tile.on-board:hover{transform:translateY(-2px) !important;}
+/* SAĞ: Sohbet */
+.ok-chat-area{width:200px;flex-shrink:0;display:flex;flex-direction:column;background:rgba(0,0,0,0.3);border-left:1px solid rgba(60,160,60,0.2);}
+.ok-chat-title{padding:8px 10px;font-size:11px;font-weight:bold;color:rgba(150,220,150,0.6);border-bottom:1px solid rgba(60,160,60,0.15);background:rgba(0,0,0,0.2);}
+.ok-chat-msgs{flex:1;overflow-y:auto;padding:6px 8px;display:flex;flex-direction:column;gap:4px;}
+.ok-chat-msg{font-size:10px;padding:4px 7px;border-radius:8px;max-width:95%;word-break:break-word;line-height:1.4;}
+.ok-chat-msg.me{background:rgba(40,120,50,0.4);color:rgba(200,255,200,0.9);align-self:flex-end;border-bottom-right-radius:2px;}
+.ok-chat-msg.them{background:rgba(255,255,255,0.07);color:rgba(200,230,200,0.8);align-self:flex-start;border-bottom-left-radius:2px;}
+.ok-chat-msg.system{background:transparent;color:rgba(120,200,120,0.4);font-style:italic;text-align:center;align-self:center;font-size:9px;}
+.ok-chat-inp-row{display:flex;gap:4px;padding:6px 8px;border-top:1px solid rgba(60,160,60,0.15);}
+.ok-chat-inp{flex:1;padding:5px 8px;background:rgba(255,255,255,0.06);border:1px solid rgba(60,160,60,0.25);border-radius:6px;color:rgba(200,255,200,0.9);font-size:10px;font-family:Tahoma,sans-serif;outline:none;}
+.ok-chat-inp:focus{border-color:rgba(80,200,80,0.45);}
+.ok-chat-send{width:26px;height:26px;border-radius:5px;background:linear-gradient(135deg,#2a8a3a,#1a6a28);border:none;color:white;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
 
 
 .ru-label{font-size:10px;color:#5588aa;font-weight:bold;margin-bottom:8px;text-align:left;}
@@ -1742,80 +1781,126 @@ body{font-family:Tahoma,sans-serif;background:#1a1a2e;min-height:100vh;display:f
 <!-- OKEY OYUNU -->
 <div id="okeyModal" class="overlay" style="display:none;align-items:center;justify-content:center;z-index:8800;">
   <div class="ok-win">
-    <div class="titlebar">
+    <!-- TITLEBAR -->
+    <div class="titlebar" style="flex-shrink:0">
       <div class="tb-left">
         <div class="tb-logo"><svg width="16" height="16"><use href="#oml-logo"/></svg><svg width="16" height="16"><use href="#oml-logo"/></svg><svg width="16" height="16"><use href="#oml-logo"/></svg><svg width="16" height="16"><use href="#oml-logo"/></svg></div>
-        <span class="tb-title">🀄 Okey Oyunu — Messenger Life</span>
+        <span class="tb-title">🀄 Okey — Messenger Life</span>
       </div>
       <div class="tb-btns"><div class="wbtn c" onclick="okeyClose()">✕</div></div>
     </div>
-    <!-- BEKLEME EKRANI -->
+
+    <!-- BEKLEME -->
     <div id="okWait" class="ok-screen">
-      <div style="font-size:48px;margin-bottom:12px">🀄</div>
+      <div style="font-size:52px;margin-bottom:14px">🀄</div>
       <div class="ok-wait-title" id="okWaitMsg">Davet gönderildi...</div>
       <div class="ok-wait-sub" id="okWaitSub">Arkadaşının kabul etmesi bekleniyor</div>
       <button class="ok-btn ok-cancel" onclick="okeyClose()">İptal</button>
     </div>
-    <!-- DAVET EKRANI -->
+
+    <!-- DAVET -->
     <div id="okInvite" class="ok-screen" style="display:none">
-      <div style="font-size:48px;margin-bottom:12px">🀄</div>
+      <div style="font-size:52px;margin-bottom:14px">🀄</div>
       <div class="ok-wait-title" id="okInviteMsg">Okey oynamaya davet edildin!</div>
       <div class="ok-wait-sub">Kabul ediyor musun?</div>
-      <div style="display:flex;gap:10px;margin-top:16px">
+      <div style="display:flex;gap:10px;margin-top:16px;justify-content:center">
         <button class="ok-btn ok-accept" onclick="okeyAccept()">✅ Kabul Et</button>
         <button class="ok-btn ok-cancel" onclick="okeyDecline()">❌ Reddet</button>
       </div>
     </div>
-    <!-- OYUN EKRANI -->
-    <div id="okGame" class="ok-screen" style="display:none">
-      <!-- Üst: rakip bilgisi + gösterge -->
-      <div class="ok-top">
-        <div class="ok-player-info" id="okOppInfo">
-          <div class="ok-av" id="okOppAv">😎</div>
-          <div>
-            <div class="ok-pname" id="okOppName">Rakip</div>
-            <div class="ok-phand">Elde: <span id="okOppCount">15</span> taş</div>
+
+    <!-- OYUN -->
+    <div id="okGame" style="display:none;flex:1;flex-direction:column;min-height:0">
+      <div class="ok-game-layout">
+
+        <!-- SOL: TAHTA ALANI -->
+        <div class="ok-board-area">
+
+          <!-- Üst bar -->
+          <div class="ok-topbar">
+            <div class="ok-player-info">
+              <div class="ok-av" id="okOppAv">😎</div>
+              <div>
+                <div class="ok-pname" id="okOppName">Rakip</div>
+                <div class="ok-phand">Elde: <span id="okOppCount">15</span> taş</div>
+              </div>
+            </div>
+            <div class="ok-info-group">
+              <div class="ok-info-box">
+                <div class="ok-info-lbl">Gösterge</div>
+                <div id="okGosterge" class="ok-tile ok-tile-sm"></div>
+              </div>
+              <div class="ok-info-box">
+                <div class="ok-info-lbl">Okey</div>
+                <div id="okOkeyTile" class="ok-tile ok-tile-sm ok-tile-okey"></div>
+              </div>
+              <div class="ok-info-box">
+                <div class="ok-pile-label">Deste</div>
+                <div class="ok-tile ok-tile-back ok-tile-sm" onclick="okeyDraw()"><span id="okPileCount">?</span></div>
+              </div>
+              <div class="ok-info-box">
+                <div class="ok-pile-label">Atılan</div>
+                <div id="okLastDiscard" class="ok-tile ok-tile-sm" onclick="okeyTakeDiscard()" style="min-width:28px"></div>
+              </div>
+            </div>
+            <div class="ok-turn-badge" id="okTurnBadge">Sıran!</div>
           </div>
-        </div>
-        <div class="ok-middle-info">
-          <div class="ok-gosterge-box">
-            <div class="ok-info-lbl">Gösterge</div>
-            <div id="okGosterge" class="ok-tile ok-tile-sm"></div>
+
+          <!-- Rakibin eli (arka yüz, üstte) -->
+          <div class="ok-opp-hand-area">
+            <div class="ok-opp-hand-lbl">Rakibin Eli</div>
+            <div class="ok-opp-hand" id="okOppHand"></div>
           </div>
-          <div class="ok-gosterge-box">
-            <div class="ok-info-lbl">Okey Taşı</div>
-            <div id="okOkeyTile" class="ok-tile ok-tile-sm ok-tile-okey"></div>
-          </div>
-          <div class="ok-pile-box">
-            <div class="ok-info-lbl">Deste</div>
-            <div class="ok-tile ok-tile-back ok-tile-sm" id="okPileBtn" onclick="okeyDraw()">
-              <span id="okPileCount">?</span>
+
+          <!-- Orta: Deste + Atılan büyük gösterim kaldırıldı, topbar'da var -->
+
+          <!-- DİZİM TAHTASI -->
+          <div class="ok-board">
+            <div class="ok-board-lbl">📋 Dizim Tahtası — Taşlarını buraya diz, sonra Okey! de</div>
+            <div class="ok-board-rows" id="okBoardRows">
+              <!-- 4 satır JS ile oluşturulacak -->
             </div>
           </div>
-          <div class="ok-pile-box">
-            <div class="ok-info-lbl">Atılan</div>
-            <div id="okLastDiscard" class="ok-tile ok-tile-sm" onclick="okeyTakeDiscard()"></div>
+
+          <!-- Benim elim -->
+          <div class="ok-my-hand-area">
+            <div class="ok-hand-lbl">
+              <span>Elindeki Taşlar (<span id="okMyCount">15</span>)</span>
+              <span style="font-size:9px;color:rgba(120,200,120,0.4)">Taşa tıkla → seç → tahtaya veya at</span>
+            </div>
+            <div class="ok-hand" id="okMyHand"></div>
+          </div>
+
+          <!-- Aksiyon butonları -->
+          <div class="ok-actions">
+            <button class="ok-btn ok-draw" id="okDrawBtn" onclick="okeyDraw()">📥 Taş Çek</button>
+            <button class="ok-btn ok-discard" id="okDiscardBtn" onclick="okeyDiscardSelected()" disabled>📤 At</button>
+            <button class="ok-btn ok-board-btn" onclick="okeyMoveToBoard()" id="okBoardMoveBtn" disabled>📋 Tahtaya Diz</button>
+            <button class="ok-btn ok-board-btn" onclick="okeyRecallBoard()" style="background:rgba(80,60,20,0.3);color:#ddaa44;border-color:rgba(180,140,30,0.3)">↩ Geri Al</button>
+            <button class="ok-btn ok-win-btn" id="okWinBtn" onclick="okeyDeclareWin()">🏆 Okey!</button>
+            <button class="ok-btn ok-sort" onclick="okeySortHand()">🔀 Sırala</button>
+          </div>
+          <div class="ok-status" id="okStatus">Oyun başlıyor...</div>
+        </div>
+
+        <!-- SAĞ: MİNİ SOHBET -->
+        <div class="ok-chat-area">
+          <div class="ok-chat-title">💬 Oyun Sohbeti</div>
+          <div class="ok-chat-msgs" id="okChatMsgs">
+            <div class="ok-chat-msg system">Oyun başladı! İyi şanslar 🍀</div>
+          </div>
+          <div class="ok-chat-inp-row">
+            <input class="ok-chat-inp" id="okChatInp" placeholder="Mesaj..." onkeydown="if(event.key==='Enter')okChatSend()">
+            <button class="ok-chat-send" onclick="okChatSend()">▶</button>
           </div>
         </div>
-        <div class="ok-turn-badge" id="okTurnBadge">Sıran!</div>
+
       </div>
-      <!-- Benim elim -->
-      <div class="ok-hand-area">
-        <div class="ok-hand-lbl">Elindeki Taşlar (<span id="okMyCount">15</span>)</div>
-        <div class="ok-hand" id="okMyHand"></div>
-      </div>
-      <!-- Aksiyon butonları -->
-      <div class="ok-actions">
-        <button class="ok-btn ok-draw" id="okDrawBtn" onclick="okeyDraw()">📥 Taş Çek</button>
-        <button class="ok-btn ok-discard" id="okDiscardBtn" onclick="okeyDiscardSelected()" disabled>📤 At</button>
-        <button class="ok-btn ok-win" id="okWinBtn" onclick="okeyDeclareWin()">🏆 Okey!</button>
-        <button class="ok-btn ok-sort" onclick="okeySortHand()">🔀 Sırala</button>
-      </div>
-      <div class="ok-status" id="okStatus">Oyun başlıyor...</div>
     </div>
-    <!-- BİTİŞ EKRANI -->
+
+    <!-- BİTİŞ -->
     <div id="okEnd" class="ok-screen" style="display:none">
-      <div id="okEndEmoji" style="font-size:64px;margin-bottom:12px">🏆</div>
+      <div id="okEndEmoji" style="font-size:64px;margin-bottom:14px">🏆</div>
       <div class="ok-wait-title" id="okEndMsg">Oyun bitti!</div>
       <div class="ok-wait-sub" id="okEndSub"></div>
       <button class="ok-btn ok-accept" onclick="okeyPlayAgain()" style="margin-top:16px">🔄 Tekrar Oyna</button>
@@ -2166,9 +2251,17 @@ async function startApp(){
   saveRecentUser(me);
   setTimeout(()=>play('signin'),600);
 }
+function avHTML(av,size='100%'){
+  if(!av||av.length<5) return av||'🧑';
+  if(av.startsWith('data:image')||av.startsWith('http')){
+    return `<img src="${av}" style="width:${size};height:${size};border-radius:50%;object-fit:cover;display:block">`;
+  }
+  return av;
+}
 function updProf(){
   if(!me)return;
-  document.getElementById('myAv').innerHTML=(me.avatar||'🧑')+'<div class="prof-av-dot" id="myDot"></div>';
+  const avEl=document.getElementById('myAv');
+  avEl.innerHTML=avHTML(me.avatar)+'<div class="prof-av-dot" id="myDot"></div>';
   document.getElementById('myName').textContent=me.displayName;
   document.getElementById('myPmsg').textContent=me.personalMsg||'Kişisel mesajınız...';
 }
@@ -2184,8 +2277,9 @@ function rendC(){
 }
 function cHTML(c,dim=false){
   const dc=SC[c.status]||'#aaa';
-  return `<div class="ci ${cur?.id===c._id?'active':''}" onclick="openChat('${c._id}','${c.displayName}','${c.avatar||'🧑'}','${c.status}','${(c.personalMsg||'').replace(/'/g,'')}') " data-id="${c._id}" style="${dim?'opacity:0.6':''}">
-    <div class="ciav"><span>${c.avatar||'🧑'}</span><div class="cdot" style="background:${dc}"></div></div>
+  const avDisp=avHTML(c.avatar||'🧑','32px');
+  return `<div class="ci ${cur?.id===c._id?'active':''}" onclick="openChat('${c._id}','${c.displayName}','${(c.avatar||'🧑').replace(/'/g,"\'")}','${c.status}','${(c.personalMsg||'').replace(/'/g,'')}') " data-id="${c._id}" style="${dim?'opacity:0.6':''}">
+    <div class="ciav"><span>${avDisp}</span><div class="cdot" style="background:${dc}"></div></div>
     <div class="ciinfo"><div class="ciname">${c.displayName}</div><div class="cimsg">${c.personalMsg||c.email}</div></div>
   </div>`;
 }
@@ -2590,13 +2684,13 @@ function dpRemove(){
   dpUpdDemos(null,'🧑');
 }
 async function dpSave(){
-  const newAvatar=dpEmoji;
+  // Fotoğraf varsa onu, yoksa emoji kullan
+  const newAvatar = dpSnapUrl || dpUploadUrl || dpEmoji;
   try{
     const r=await fetch('/api/profile',{method:'PUT',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({displayName:me.displayName,personalMsg:me.personalMsg||'',avatar:newAvatar})});
     if(!r.ok)return;
     me.avatar=newAvatar; localStorage.setItem('oml_user',JSON.stringify(me));
     updProf(); closeDpModal(); showN('✅ Profil fotoğrafı güncellendi!');
-    // Kişi listesinde de güncelle
     socket.emit('user:join',{token});
   }catch(e){showN('❌ Kaydetme hatası');}
 }
@@ -2839,9 +2933,358 @@ function mpDelShortcut(key){
 
 // ── OKEY OYUNU ──
 let okeyState = null, okeySelected = null, okeyRoomId = null, okeyOpponentId = null;
-
+let okeyBoard = [[],[],[],[]]; // 4 satır dizim tahtası
 const COLOR_NAMES = {kirmizi:'Kırmızı',sari:'Sarı',mavi:'Mavi',siyah:'Siyah',okey:'Joker'};
-const COLOR_TR = {kirmizi:'🔴',sari:'🟡',mavi:'🔵',siyah:'⚫'};
+
+function okeyInvite() {
+  if (!cur) { showN('❗ Önce bir kişi seç'); return; }
+  okeyOpponentId = cur.id;
+  socket.emit('okey:invite', { to: cur.id });
+  ['okWait','okInvite','okGame','okEnd'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.display = id === 'okWait' ? 'block' : 'none';
+  });
+  document.getElementById('okWaitMsg').textContent = 'Davet gönderildi...';
+  document.getElementById('okWaitSub').textContent = cur.name + ' kabul etmesi bekleniyor';
+  document.getElementById('okeyModal').style.display = 'flex';
+}
+
+function okeyAccept() {
+  socket.emit('okey:accept', { to: okeyOpponentId });
+  document.getElementById('okInvite').style.display = 'none';
+  document.getElementById('okWait').style.display = 'block';
+  document.getElementById('okWaitMsg').textContent = '⏳ Oyun kuruluyor...';
+  document.getElementById('okWaitSub').textContent = '';
+}
+
+function okeyDecline() {
+  socket.emit('okey:decline', { to: okeyOpponentId });
+  document.getElementById('okeyModal').style.display = 'none';
+}
+
+function okeyClose() {
+  document.getElementById('okeyModal').style.display = 'none';
+  okeyState = null; okeySelected = null; okeyRoomId = null; okeyBoard = [[],[],[],[]];
+}
+
+function okeyInitBoard() {
+  const rows = document.getElementById('okBoardRows');
+  rows.innerHTML = '';
+  for (let r = 0; r < 4; r++) {
+    const row = document.createElement('div');
+    row.className = 'ok-board-row';
+    row.id = 'okBRow' + r;
+    row.setAttribute('data-row', r);
+    row.onclick = (e) => { if(e.target === row) okeyDropToBoard(r); };
+    const lbl = document.createElement('span');
+    lbl.className = 'ok-board-row-lbl';
+    lbl.textContent = r+1;
+    row.appendChild(lbl);
+    rows.appendChild(row);
+  }
+}
+
+function okeyRenderBoard() {
+  for (let r = 0; r < 4; r++) {
+    const row = document.getElementById('okBRow' + r);
+    if (!row) continue;
+    // Sadece taşları temizle (lbl kalır)
+    Array.from(row.querySelectorAll('.ok-tile')).forEach(t => t.remove());
+    okeyBoard[r].forEach((tile, ti) => {
+      const div = okeyMakeTile(tile, 'board', r, ti);
+      row.appendChild(div);
+    });
+    // Boş slot göster
+    if (okeyBoard[r].length === 0) {
+      const slot = document.createElement('div');
+      slot.className = 'ok-board-slot';
+      slot.textContent = '+';
+      slot.onclick = () => okeyDropToBoard(r);
+      row.appendChild(slot);
+    }
+  }
+}
+
+function okeyMakeTile(tile, context, row, idx) {
+  const div = document.createElement('div');
+  const sz = context === 'board' ? 'ok-tile' : (context === 'opp' ? 'ok-tile ok-tile-xs' : 'ok-tile');
+  div.className = sz;
+  const isOkey = okeyState && tile.color === okeyState.okeyColor && tile.num === okeyState.okeyNum;
+  if (tile.isOkey || isOkey) div.classList.add('ok-tile-okey');
+  div.setAttribute('data-color', tile.color);
+  div.textContent = tile.isOkey ? '★' : tile.num;
+  div.title = tile.isOkey ? 'Joker (Okey)' : (COLOR_NAMES[tile.color] + ' ' + tile.num);
+
+  if (context === 'hand') {
+    if (okeySelected === idx) div.classList.add('selected');
+    div.onclick = () => {
+      okeySelected = (okeySelected === idx) ? null : idx;
+      okeyUpdateButtons();
+      okeyRenderHand(okeyState.myHand);
+    };
+  } else if (context === 'board') {
+    div.classList.add('on-board');
+    div.title += ' (tahtadan geri al için çift tıkla)';
+    div.ondblclick = () => okeyRecallFromBoard(row, idx);
+  }
+  return div;
+}
+
+function okeyRenderState(state) {
+  okeyState = state;
+  okeyRoomId = state.roomId;
+
+  document.getElementById('okWait').style.display = 'none';
+  document.getElementById('okInvite').style.display = 'none';
+  document.getElementById('okGame').style.display = 'flex';
+
+  // Gösterge + Okey
+  const gEl = document.getElementById('okGosterge');
+  gEl.setAttribute('data-color', state.gosterge.color);
+  gEl.textContent = state.gosterge.num || '★';
+
+  const oEl = document.getElementById('okOkeyTile');
+  oEl.setAttribute('data-color', state.okeyColor);
+  oEl.textContent = state.okeyNum;
+  oEl.classList.add('ok-tile-okey');
+
+  document.getElementById('okPileCount').textContent = state.pile;
+
+  // Atılan
+  const ld = document.getElementById('okLastDiscard');
+  if (state.discard && state.discard.length > 0) {
+    const last = state.discard[state.discard.length - 1];
+    ld.setAttribute('data-color', last.color);
+    ld.textContent = last.num || '★';
+    ld.title = 'Atılan taşı al (tıkla)';
+  } else {
+    ld.removeAttribute('data-color');
+    ld.style.background = '';
+    ld.textContent = '—';
+  }
+
+  // Rakip
+  const oppName = cur ? cur.name : 'Rakip';
+  document.getElementById('okOppName').textContent = oppName;
+  document.getElementById('okOppCount').textContent = state.oppHandCount;
+  okeyRenderOppHand(state.oppHandCount);
+
+  // El
+  document.getElementById('okMyCount').textContent = state.myHand.length;
+  okeyRenderHand(state.myHand);
+
+  // Tahta init (sadece ilk kez)
+  if (!document.getElementById('okBRow0')) okeyInitBoard();
+  okeyRenderBoard();
+
+  // Sıra
+  const badge = document.getElementById('okTurnBadge');
+  if (state.isMyTurn) {
+    badge.textContent = '🟢 Sıran!';
+    badge.classList.remove('waiting');
+  } else {
+    badge.textContent = '⏳ Bekle...';
+    badge.classList.add('waiting');
+  }
+
+  okeyUpdateButtons();
+  const status = state.isMyTurn
+    ? (state.drawnThisTurn ? '✅ Taş çektin — seç: tahtaya diz veya at' : '👆 Desteden veya atılan taştan çek')
+    : '⏳ Rakibin oynuyor...';
+  document.getElementById('okStatus').textContent = status;
+}
+
+function okeyRenderOppHand(count) {
+  const c = document.getElementById('okOppHand');
+  c.innerHTML = '';
+  for (let i = 0; i < count; i++) {
+    const d = document.createElement('div');
+    d.className = 'ok-tile ok-tile-xs ok-tile-back';
+    d.textContent = '';
+    c.appendChild(d);
+  }
+}
+
+function okeyRenderHand(hand) {
+  const container = document.getElementById('okMyHand');
+  container.innerHTML = '';
+  hand.forEach((tile, i) => {
+    container.appendChild(okeyMakeTile(tile, 'hand', 0, i));
+  });
+}
+
+function okeyUpdateButtons() {
+  const s = okeyState;
+  if (!s) return;
+  const hasSel = okeySelected !== null;
+  document.getElementById('okDrawBtn').disabled = !s.isMyTurn || s.drawnThisTurn;
+  document.getElementById('okDiscardBtn').disabled = !s.isMyTurn || !s.drawnThisTurn || !hasSel;
+  document.getElementById('okBoardMoveBtn').disabled = !hasSel;
+  document.getElementById('okWinBtn').disabled = !s.isMyTurn || !s.drawnThisTurn;
+}
+
+function okeyDraw() {
+  if (!okeyState || !okeyState.isMyTurn || okeyState.drawnThisTurn) return;
+  socket.emit('okey:draw', { roomId: okeyRoomId });
+}
+
+function okeyTakeDiscard() {
+  if (!okeyState || !okeyState.isMyTurn || okeyState.drawnThisTurn) return;
+  if (!okeyState.discard || okeyState.discard.length === 0) return;
+  socket.emit('okey:takeDiscard', { roomId: okeyRoomId });
+}
+
+function okeyDiscardSelected() {
+  if (okeySelected === null || !okeyState) return;
+  const tile = okeyState.myHand[okeySelected];
+  socket.emit('okey:discard', { roomId: okeyRoomId, tile });
+  okeySelected = null;
+}
+
+// Seçili taşı tahtaya ekle
+function okeyMoveToBoard() {
+  if (okeySelected === null || !okeyState) return;
+  // Boş satır bul veya ilk satıra ekle
+  let targetRow = okeyBoard.findIndex(r => r.length < 13);
+  if (targetRow === -1) { showN('❗ Tahta dolu!'); return; }
+  const tile = okeyState.myHand.splice(okeySelected, 1)[0];
+  okeyBoard[targetRow].push(tile);
+  okeySelected = null;
+  document.getElementById('okMyCount').textContent = okeyState.myHand.length;
+  okeyRenderHand(okeyState.myHand);
+  okeyRenderBoard();
+  okeyUpdateButtons();
+}
+
+// Taşı belirli satıra bırak
+function okeyDropToBoard(row) {
+  if (okeySelected === null || !okeyState) return;
+  if (okeyBoard[row].length >= 13) { showN('❗ Bu satır dolu!'); return; }
+  const tile = okeyState.myHand.splice(okeySelected, 1)[0];
+  okeyBoard[row].push(tile);
+  okeySelected = null;
+  document.getElementById('okMyCount').textContent = okeyState.myHand.length;
+  okeyRenderHand(okeyState.myHand);
+  okeyRenderBoard();
+  okeyUpdateButtons();
+}
+
+// Tahtadan elle geri al
+function okeyRecallFromBoard(row, idx) {
+  const tile = okeyBoard[row].splice(idx, 1)[0];
+  okeyState.myHand.push(tile);
+  document.getElementById('okMyCount').textContent = okeyState.myHand.length;
+  okeyRenderHand(okeyState.myHand);
+  okeyRenderBoard();
+  okeyUpdateButtons();
+}
+
+// Tüm tahtayı ele geri al
+function okeyRecallBoard() {
+  for (let r = 0; r < 4; r++) {
+    while (okeyBoard[r].length) {
+      okeyState.myHand.push(okeyBoard[r].pop());
+    }
+  }
+  okeySelected = null;
+  document.getElementById('okMyCount').textContent = okeyState.myHand.length;
+  okeyRenderHand(okeyState.myHand);
+  okeyRenderBoard();
+  okeyUpdateButtons();
+}
+
+function okeySortHand() {
+  if (!okeyState) return;
+  const ci = ['kirmizi','sari','mavi','siyah','okey'];
+  okeyState.myHand.sort((a,b) => {
+    if (ci.indexOf(a.color) !== ci.indexOf(b.color)) return ci.indexOf(a.color) - ci.indexOf(b.color);
+    return a.num - b.num;
+  });
+  okeySelected = null;
+  okeyRenderHand(okeyState.myHand);
+}
+
+function okeyDeclareWin() {
+  if (!okeyState || !okeyState.isMyTurn || !okeyState.drawnThisTurn) return;
+  socket.emit('okey:win', { roomId: okeyRoomId });
+}
+
+function okeyPlayAgain() { okeyBoard = [[],[],[],[]]; okeyInvite(); }
+
+// Oyun içi sohbet
+function okChatSend() {
+  const inp = document.getElementById('okChatInp');
+  const text = inp.value.trim();
+  if (!text || !okeyOpponentId) return;
+  socket.emit('okey:chat', { to: okeyOpponentId, text });
+  okChatAppend(text, true);
+  inp.value = '';
+}
+function okChatAppend(text, isMe, who) {
+  const c = document.getElementById('okChatMsgs');
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'ok-chat-msg ' + (isMe ? 'me' : 'them');
+  d.textContent = (who && !isMe ? who + ': ' : '') + text;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+function okChatSystem(text) {
+  const c = document.getElementById('okChatMsgs');
+  if (!c) return;
+  const d = document.createElement('div');
+  d.className = 'ok-chat-msg system';
+  d.textContent = text;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+// Socket olayları
+socket.on('okey:invited', ({ from }) => {
+  okeyOpponentId = from;
+  ['okWait','okGame','okEnd'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('okInvite').style.display = 'block';
+  document.getElementById('okInviteMsg').textContent = '🀄 Okey oynamaya davet edildin!';
+  document.getElementById('okeyModal').style.display = 'flex';
+  play('msgIn');
+});
+
+socket.on('okey:declined', () => {
+  document.getElementById('okWaitMsg').textContent = '❌ Davet reddedildi';
+  document.getElementById('okWaitSub').textContent = '';
+  setTimeout(() => okeyClose(), 2000);
+});
+
+socket.on('okey:start', (state) => {
+  okeyBoard = [[],[],[],[]];
+  showN('🀄 Okey oyunu başladı!');
+  okeyInitBoard();
+  okeyRenderState(state);
+  okChatSystem('Oyun başladı! İyi şanslar 🍀');
+});
+
+socket.on('okey:state', (state) => {
+  okeySelected = null;
+  okeyRenderState(state);
+});
+
+socket.on('okey:chat', ({ from, text }) => {
+  const who = cur ? cur.name : 'Rakip';
+  okChatAppend(text, false, who);
+  play('msgIn');
+});
+
+socket.on('okey:gameover', ({ winner, winnerName }) => {
+  const isWinner = winner === me.id;
+  document.getElementById('okGame').style.display = 'none';
+  document.getElementById('okEnd').style.display = 'block';
+  document.getElementById('okEndEmoji').textContent = isWinner ? '🏆' : '😢';
+  document.getElementById('okEndMsg').textContent = isWinner ? '🎉 Kazandın!' : '😢 Kaybettin!';
+  document.getElementById('okEndSub').textContent = winnerName + ' oyunu tamamladı!';
+  okChatSystem(isWinner ? '🏆 Sen kazandın!' : '😢 ' + winnerName + ' kazandı!');
+});
+
+
 
 function okeyInvite() {
   if (!cur) { showN('❗ Önce bir kişi seç'); return; }
