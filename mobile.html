@@ -135,7 +135,7 @@ body{font-family:Tahoma,Arial,sans-serif;background:#1a1a2e;height:100dvh;overfl
 <!-- ANA EKRAN (KİŞİ LİSTESİ) -->
 <div id="mainScreen">
   <div class="mob-header">
-    <div class="mob-header-av" id="myAv">🧑</div>
+    <div class="mob-header-av" id="myAv" onclick="openProfileModal()" style="cursor:pointer;" title="Profil fotoğrafını değiştir">🧑</div>
     <div class="mob-header-info">
       <div class="mob-header-name" id="myName">Yükleniyor...</div>
       <div class="mob-header-status">● Çevrimiçi</div>
@@ -159,15 +159,115 @@ body{font-family:Tahoma,Arial,sans-serif;background:#1a1a2e;height:100dvh;overfl
       <div class="chat-header-status" id="chatStatus">● Çevrimiçi</div>
     </div>
     <div class="chat-header-call" onclick="openGames()">🎮</div>
-    <div class="chat-header-call" onclick="showToast('Görüntülü arama masaüstünde kullanılabilir')">📹</div>
+    <div class="chat-header-call" onclick="mobStartCall()">📹</div>
   </div>
   <div id="messages"></div>
   <div class="typing-ind" id="typingInd" style="display:none;">yazıyor...</div>
-  <div class="chat-input-area">
-    <textarea id="msgInput" placeholder="Mesaj yaz..." rows="1"
-      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
-      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';emitTyping();"></textarea>
-    <button class="send-btn" onclick="sendMessage()">➤</button>
+
+  <!-- Emoji paneli -->
+  <div id="emojiPanel" style="display:none;background:white;border-top:1px solid #eee;padding:10px;max-height:200px;overflow-y:auto;">
+    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+      <div style="width:100%;color:#888;font-size:11px;margin-bottom:4px;">Emojiler</div>
+      😀 😂 😍 🥰 😎 😭 😡 🤔 😴 🤩 😏 🥺 😤 🤗 😇 🤭 😬 🙄 😳 🤯
+      💀 👻 😈 🤡 💩 👽 🤖 🎃 ❤️ 🧡 💛 💚 💙 💜 🖤 🤍 💔 ❣️ 💕 💞
+      👍 👎 👏 🙌 🤝 🤜 🤛 ✊ 👊 🤚 ✋ 🖐️ 👋 🤙 💪 🦾 🖕 🤞 🤟 🤘
+      🎉 🎊 🎈 🎁 🏆 🥇 🎮 🎯 🎲 🎸 🎵 🎶 🔥 ⭐ 💥 ✨ 🌈 ☀️ 🌙 ⚡
+    </div>
+    <div style="margin-top:8px;border-top:1px solid #eee;padding-top:8px;">
+      <div style="color:#888;font-size:11px;margin-bottom:6px;">Wink Gönder</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div onclick="sendWink('😉')" style="font-size:28px;cursor:pointer;">😉</div>
+        <div onclick="sendWink('❤️')" style="font-size:28px;cursor:pointer;">❤️</div>
+        <div onclick="sendWink('💃')" style="font-size:28px;cursor:pointer;">💃</div>
+        <div onclick="sendWink('🔥')" style="font-size:28px;cursor:pointer;">🔥</div>
+        <div onclick="sendWink('⭐')" style="font-size:28px;cursor:pointer;">⭐</div>
+        <div onclick="sendWink('🤗')" style="font-size:28px;cursor:pointer;">🤗</div>
+        <div onclick="sendWink('😘')" style="font-size:28px;cursor:pointer;">😘</div>
+        <div onclick="sendWink('😎')" style="font-size:28px;cursor:pointer;">😎</div>
+        <div onclick="sendNudge()" style="background:#ff4444;color:white;padding:6px 12px;border-radius:16px;font-size:13px;cursor:pointer;">〰️ Titreşim</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sesli mesaj paneli -->
+  <div id="voicePanel" style="display:none;background:white;border-top:1px solid #eee;padding:12px;text-align:center;">
+    <div id="voiceWave" style="display:flex;align-items:center;justify-content:center;gap:3px;height:40px;margin-bottom:10px;">
+      <div style="color:#aaa;font-size:13px;" id="voiceStatus">Kayıt için butona bas</div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="voiceRecBtn" onclick="toggleVoiceRec()" style="padding:12px 20px;background:#ef4444;color:white;border:none;border-radius:20px;font-size:14px;cursor:pointer;font-weight:bold;">🎤 Kaydet</button>
+      <button id="voiceSendBtn" onclick="sendVoiceMsg()" style="display:none;padding:12px 20px;background:#0078d4;color:white;border:none;border-radius:20px;font-size:14px;cursor:pointer;font-weight:bold;">📤 Gönder</button>
+      <button onclick="document.getElementById('voicePanel').style.display='none'" style="padding:12px 20px;background:#f0f0f0;color:#555;border:none;border-radius:20px;font-size:14px;cursor:pointer;">❌</button>
+    </div>
+  </div>
+
+  <!-- Input alanı -->
+  <div class="chat-input-area" style="flex-wrap:wrap;padding:6px 8px;">
+    <div style="display:flex;gap:6px;width:100%;align-items:flex-end;">
+      <div onclick="toggleEmojiPanel()" style="font-size:24px;cursor:pointer;padding:4px;flex-shrink:0;">😊</div>
+      <div onclick="trigFileUpload()" style="font-size:22px;cursor:pointer;padding:4px;flex-shrink:0;">📎</div>
+      <div onclick="trigCameraPhoto()" style="font-size:22px;cursor:pointer;padding:4px;flex-shrink:0;">📷</div>
+      <div onclick="toggleVoicePanel()" style="font-size:22px;cursor:pointer;padding:4px;flex-shrink:0;">🎤</div>
+      <textarea id="msgInput" placeholder="Mesaj yaz..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';emitTyping();"
+        style="flex:1;padding:9px 14px;border:1px solid #ddd;border-radius:22px;font-size:15px;outline:none;resize:none;font-family:Tahoma,sans-serif;line-height:1.4;max-height:100px;background:#f5f5f5;"></textarea>
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+    <input type="file" id="fileInput" style="display:none" accept="image/*,video/*,.pdf,.doc,.docx,.zip" onchange="handleFileUpload(this)">
+    <input type="file" id="cameraInput" style="display:none" accept="image/*" capture="environment" onchange="handleFileUpload(this)">
+  </div>
+</div>
+
+<!-- GÖRÜNTÜLÜ ARAMA EKRANI -->
+<div id="callScreen" style="display:none;flex-direction:column;height:100dvh;background:#000;position:fixed;top:0;left:0;width:100%;z-index:90;">
+  <!-- Uzak video tam ekran -->
+  <video id="remoteVideo" autoplay playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;"></video>
+  <!-- Bağlanıyor placeholder -->
+  <div id="remotePH" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1a1a2e;">
+    <div id="callAvEl" style="font-size:80px;margin-bottom:16px;">😎</div>
+    <div id="callNameEl" style="color:white;font-size:20px;font-weight:bold;margin-bottom:8px;"></div>
+    <div id="callStatusEl" style="color:rgba(255,255,255,0.6);font-size:14px;">Bağlanıyor...</div>
+  </div>
+  <!-- Yerel video küçük -->
+  <video id="localVideo" autoplay playsinline muted style="position:absolute;top:16px;right:16px;width:100px;height:140px;object-fit:cover;border-radius:12px;border:2px solid white;z-index:2;display:none;"></video>
+  <!-- Zamanlayıcı -->
+  <div id="callTimer" style="position:absolute;top:16px;left:0;width:100%;text-align:center;color:white;font-size:14px;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,0.8);"></div>
+  <!-- Kontroller -->
+  <div style="position:absolute;bottom:40px;left:0;width:100%;display:flex;justify-content:center;gap:20px;z-index:2;">
+    <div onclick="mobToggleMic()" id="mobMicBtn" style="width:60px;height:60px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;backdrop-filter:blur(8px);">🎤</div>
+    <div onclick="mobEndCall()" style="width:70px;height:70px;background:#ef4444;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;">📵</div>
+    <div onclick="mobToggleCam()" id="mobCamBtn" style="width:60px;height:60px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;backdrop-filter:blur(8px);">📷</div>
+    <div onclick="mobFlipCam()" style="width:60px;height:60px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;backdrop-filter:blur(8px);">🔄</div>
+  </div>
+</div>
+
+<!-- GELEN ARAMA -->
+<div id="incomingCall" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:95;flex-direction:column;align-items:center;justify-content:center;">
+  <div id="icAvEl" style="font-size:80px;margin-bottom:16px;">😎</div>
+  <div id="icNameEl" style="color:white;font-size:22px;font-weight:bold;margin-bottom:8px;"></div>
+  <div style="color:rgba(255,255,255,0.6);font-size:15px;margin-bottom:40px;">Görüntülü arama...</div>
+  <div style="display:flex;gap:40px;">
+    <div onclick="mobRejectCall()" style="width:70px;height:70px;background:#ef4444;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;">📵</div>
+    <div onclick="mobAcceptCall()" style="width:70px;height:70px;background:#22c55e;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;">📞</div>
+  </div>
+</div>
+
+<!-- PROFİL FOTOĞRAFI MODAL -->
+<div id="profileModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:100;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#1e2a4a;border-radius:16px;padding:24px;width:100%;max-width:340px;text-align:center;">
+    <div style="color:white;font-size:17px;font-weight:bold;margin-bottom:16px;">📸 Profil Fotoğrafı</div>
+    <div id="profilePreview" style="width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.1);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:48px;overflow:hidden;border:3px solid #0078d4;"></div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+      <button onclick="trigProfileCamera()" style="padding:12px;background:#0078d4;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">📷 Kameradan Çek</button>
+      <button onclick="trigProfileGallery()" style="padding:12px;background:#6b7280;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">🖼️ Galeriden Seç</button>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeProfileModal()" style="flex:1;padding:11px;background:rgba(255,255,255,0.1);color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;">İptal</button>
+      <button id="saveProfileBtn" onclick="saveProfilePhoto()" style="flex:1;padding:11px;background:#22c55e;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;display:none;">✅ Kaydet</button>
+    </div>
+    <input type="file" id="profileFileInput" style="display:none" accept="image/*" onchange="handleProfileFile(this)">
+    <input type="file" id="profileCamInput" style="display:none" accept="image/*" capture="user" onchange="handleProfileFile(this)">
   </div>
 </div>
 
@@ -481,7 +581,15 @@ function appendMsg(m) {
   const div = document.createElement('div');
   div.className = 'msg-row ' + (isMe ? 'me' : 'them');
   if (m.type === 'file') {
-    div.innerHTML = `<div class="msg-file">📎 <span style="font-size:13px;color:#333;">${m.fileName||'Dosya'}</span></div>`;
+    const isAudio = (m.fileName||'').includes('Sesli') || (m.fileUrl||'').endsWith('.webm');
+    const isImg = /\.(jpg|jpeg|png|gif|webp)$/i.test(m.fileName||m.fileUrl||'');
+    if (isAudio) {
+      div.innerHTML = `<div class="msg-bubble"><audio controls style="max-width:200px;"><source src="${m.fileUrl}"></audio></div>`;
+    } else if (isImg) {
+      div.innerHTML = `<div class="msg-bubble" style="padding:4px;"><img src="${m.fileUrl}" style="max-width:200px;border-radius:8px;display:block;"></div>`;
+    } else {
+      div.innerHTML = `<div class="msg-bubble">📎 <a href="${m.fileUrl}" target="_blank" style="color:inherit;">${m.fileName||'Dosya'}</a></div>`;
+    }
   } else {
     const t = (m.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     div.innerHTML = `<div class="msg-bubble">${t}</div>`;
@@ -554,6 +662,7 @@ function connectSocket() {
     }
   });
   setupOkeySocketEvents();
+  setupCallSocketEvents();
 }
 
 // ── KİŞİ EKLE ──
@@ -581,7 +690,335 @@ function showToast(msg) {
   setTimeout(() => t.style.opacity = '0', 3000);
 }
 
-// ── OYUNLAR ──
+// ── KAMERA: FOTOĞRAF ÇEK VE GÖNDER ──
+function trigCameraPhoto() {
+  document.getElementById('cameraInput').click();
+}
+
+// ── PROFİL FOTOĞRAFI ──
+let profilePhotoData = null;
+
+function openProfileModal() {
+  const prev = document.getElementById('profilePreview');
+  prev.innerHTML = '';
+  if (me?.avatar && (me.avatar.startsWith('data:') || me.avatar.startsWith('http'))) {
+    prev.innerHTML = `<img src="${me.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+  } else {
+    prev.textContent = me?.avatar || '🧑';
+  }
+  profilePhotoData = null;
+  document.getElementById('saveProfileBtn').style.display = 'none';
+  document.getElementById('profileModal').style.display = 'flex';
+}
+function closeProfileModal() { document.getElementById('profileModal').style.display = 'none'; }
+function trigProfileCamera() { document.getElementById('profileCamInput').click(); }
+function trigProfileGallery() { document.getElementById('profileFileInput').click(); }
+
+function handleProfileFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    profilePhotoData = e.target.result;
+    const prev = document.getElementById('profilePreview');
+    prev.innerHTML = `<img src="${profilePhotoData}" style="width:100%;height:100%;object-fit:cover;">`;
+    document.getElementById('saveProfileBtn').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+async function saveProfilePhoto() {
+  if (!profilePhotoData) return;
+  try {
+    const r = await fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ displayName: me.displayName, personalMsg: me.personalMsg, avatar: profilePhotoData })
+    });
+    const d = await r.json();
+    if (r.ok) {
+      me.avatar = profilePhotoData;
+      localStorage.setItem('oml_user', JSON.stringify(me));
+      setAvEl(document.getElementById('myAv'), me.avatar);
+      showToast('✅ Profil fotoğrafı güncellendi!');
+      closeProfileModal();
+    } else showToast('❌ ' + (d.error || 'Hata'));
+  } catch(e) { showToast('❌ Bağlantı hatası'); }
+}
+
+// ── WEBRtc GÖRÜNTÜLÜ ARAMA ──
+const ICE = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun1.l.google.com:19302' }] };
+let mobPC = null, mobLocalStream = null, mobMicOn = true, mobCamOn = true;
+let mobCallTimer = null, mobCallSec = 0, mobFacingMode = 'user';
+let mobInOffer = null, mobInFrom = null;
+
+async function mobStartCall() {
+  if (!cur) { showToast('Önce bir kişi seç'); return; }
+  if (cur.status === 'offline') { showToast('Kişi çevrimdışı'); return; }
+  try {
+    mobLocalStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mobFacingMode }, audio: true });
+    mobShowCallScreen(cur.name, cur.av);
+    mobSetupPC();
+    mobLocalStream.getTracks().forEach(t => mobPC.addTrack(t, mobLocalStream));
+    const offer = await mobPC.createOffer();
+    await mobPC.setLocalDescription(offer);
+    socket.emit('call:start', { to: cur.id, offer, callerName: me.displayName, callerAvatar: me.avatar || '🧑' });
+    document.getElementById('callStatusEl').textContent = 'Aranıyor...';
+  } catch(e) { showToast('❌ Kamera/mikrofon izni gerekli!'); }
+}
+
+function mobSetupPC() {
+  if (mobPC) mobPC.close();
+  mobPC = new RTCPeerConnection(ICE);
+  mobPC.onicecandidate = e => {
+    if (e.candidate) {
+      const to = cur?.id || mobInFrom;
+      if (to) socket.emit('call:ice', { to, candidate: e.candidate });
+    }
+  };
+  mobPC.ontrack = e => {
+    document.getElementById('remoteVideo').srcObject = e.streams[0];
+    document.getElementById('remoteVideo').style.display = 'block';
+    document.getElementById('remotePH').style.display = 'none';
+    document.getElementById('callStatusEl').textContent = 'Görüşme devam ediyor';
+    mobStartTimer();
+  };
+  mobPC.onconnectionstatechange = () => {
+    if (mobPC?.connectionState === 'failed' || mobPC?.connectionState === 'disconnected') mobEndCall();
+  };
+}
+
+function mobShowCallScreen(name, av) {
+  document.getElementById('callScreen').style.display = 'flex';
+  document.getElementById('callNameEl').textContent = name || '';
+  const avEl = document.getElementById('callAvEl');
+  if (av && (av.startsWith('data:') || av.startsWith('http'))) {
+    avEl.innerHTML = `<img src="${av}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`;
+  } else avEl.textContent = av || '😎';
+  const lv = document.getElementById('localVideo');
+  if (mobLocalStream) { lv.srcObject = mobLocalStream; lv.style.display = 'block'; }
+}
+
+async function mobAcceptCall() {
+  document.getElementById('incomingCall').style.display = 'none';
+  try {
+    mobLocalStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
+    const name = document.getElementById('icNameEl').textContent;
+    mobShowCallScreen(name, null);
+    mobSetupPC();
+    mobLocalStream.getTracks().forEach(t => mobPC.addTrack(t, mobLocalStream));
+    await mobPC.setRemoteDescription(mobInOffer);
+    const answer = await mobPC.createAnswer();
+    await mobPC.setLocalDescription(answer);
+    socket.emit('call:answer', { to: mobInFrom, answer });
+  } catch(e) { showToast('❌ Kamera/mikrofon izni gerekli!'); }
+}
+
+function mobRejectCall() {
+  document.getElementById('incomingCall').style.display = 'none';
+  if (mobInFrom) socket.emit('call:reject', { to: mobInFrom });
+  mobInOffer = null; mobInFrom = null;
+}
+
+function mobEndCall() {
+  const to = cur?.id || mobInFrom;
+  if (to) socket.emit('call:end', { to });
+  mobCleanCall();
+}
+
+function mobCleanCall() {
+  if (mobPC) { mobPC.close(); mobPC = null; }
+  if (mobLocalStream) { mobLocalStream.getTracks().forEach(t => t.stop()); mobLocalStream = null; }
+  mobStopTimer();
+  document.getElementById('callScreen').style.display = 'none';
+  document.getElementById('remoteVideo').srcObject = null;
+  document.getElementById('remoteVideo').style.display = 'none';
+  document.getElementById('localVideo').srcObject = null;
+  document.getElementById('localVideo').style.display = 'none';
+  document.getElementById('remotePH').style.display = 'flex';
+  mobInOffer = null; mobInFrom = null; mobMicOn = true; mobCamOn = true;
+  document.getElementById('mobMicBtn').textContent = '🎤';
+  document.getElementById('mobCamBtn').textContent = '📷';
+}
+
+function mobToggleMic() {
+  if (!mobLocalStream) return;
+  mobMicOn = !mobMicOn;
+  mobLocalStream.getAudioTracks().forEach(t => t.enabled = mobMicOn);
+  document.getElementById('mobMicBtn').textContent = mobMicOn ? '🎤' : '🔇';
+}
+
+function mobToggleCam() {
+  if (!mobLocalStream) return;
+  mobCamOn = !mobCamOn;
+  mobLocalStream.getVideoTracks().forEach(t => t.enabled = mobCamOn);
+  document.getElementById('mobCamBtn').textContent = mobCamOn ? '📷' : '🚫';
+  document.getElementById('localVideo').style.opacity = mobCamOn ? '1' : '0.3';
+}
+
+async function mobFlipCam() {
+  if (!mobLocalStream || !mobPC) return;
+  mobFacingMode = mobFacingMode === 'user' ? 'environment' : 'user';
+  const oldTrack = mobLocalStream.getVideoTracks()[0];
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: mobFacingMode }, audio: false });
+    const newTrack = newStream.getVideoTracks()[0];
+    const sender = mobPC.getSenders().find(s => s.track?.kind === 'video');
+    if (sender) await sender.replaceTrack(newTrack);
+    oldTrack.stop();
+    mobLocalStream.removeTrack(oldTrack);
+    mobLocalStream.addTrack(newTrack);
+    document.getElementById('localVideo').srcObject = mobLocalStream;
+  } catch(e) { showToast('Kamera çevrilemedi'); }
+}
+
+function mobStartTimer() {
+  mobStopTimer(); mobCallSec = 0;
+  mobCallTimer = setInterval(() => {
+    mobCallSec++;
+    const m = String(Math.floor(mobCallSec / 60)).padStart(2, '0');
+    const s = String(mobCallSec % 60).padStart(2, '0');
+    document.getElementById('callTimer').textContent = m + ':' + s;
+  }, 1000);
+}
+function mobStopTimer() { clearInterval(mobCallTimer); document.getElementById('callTimer').textContent = ''; }
+
+function setupCallSocketEvents() {
+  socket.on('call:incoming', async ({ from, offer, callerName, callerAvatar }) => {
+    mobInOffer = offer; mobInFrom = from;
+    document.getElementById('icNameEl').textContent = callerName || 'Birisi';
+    const avEl = document.getElementById('icAvEl');
+    if (callerAvatar && (callerAvatar.startsWith('data:') || callerAvatar.startsWith('http'))) {
+      avEl.innerHTML = `<img src="${callerAvatar}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`;
+    } else avEl.textContent = callerAvatar || '😎';
+    document.getElementById('incomingCall').style.display = 'flex';
+  });
+  socket.on('call:answered', async ({ answer }) => {
+    try { if (mobPC) await mobPC.setRemoteDescription(answer); } catch(e) {}
+  });
+  socket.on('call:ice', async ({ candidate }) => {
+    try { if (mobPC && mobPC.remoteDescription) await mobPC.addIceCandidate(candidate); } catch(e) {}
+  });
+  socket.on('call:rejected', () => { showToast('❌ Arama reddedildi'); mobCleanCall(); });
+  socket.on('call:ended', () => { showToast('📵 Görüşme sona erdi'); mobCleanCall(); });
+}
+function toggleEmojiPanel() {
+  const p = document.getElementById('emojiPanel');
+  const v = document.getElementById('voicePanel');
+  v.style.display = 'none';
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleVoicePanel() {
+  const p = document.getElementById('voicePanel');
+  const e = document.getElementById('emojiPanel');
+  e.style.display = 'none';
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+// Emoji panelindeki emojilere tıklanınca input'a ekle
+document.addEventListener('click', (ev) => {
+  const panel = document.getElementById('emojiPanel');
+  if (!panel || panel.style.display === 'none') return;
+  const t = ev.target;
+  if (t.closest('#emojiPanel') && t.textContent.length <= 2 && !t.onclick) {
+    const ta = document.getElementById('msgInput');
+    ta.value += t.textContent;
+    ta.focus();
+  }
+});
+
+function sendWink(emoji) {
+  if (!cur) return;
+  socket.emit('message:send', { to: cur.id, text: '✨ Wink: ' + emoji, type: 'text' });
+  appendMsg({ from: me.id, text: '✨ Wink: ' + emoji });
+  document.getElementById('emojiPanel').style.display = 'none';
+}
+
+function sendNudge() {
+  if (!cur) return;
+  socket.emit('nudge:send', { to: cur.id });
+  appendMsg({ from: me.id, text: '〰️ Titreşim gönderdi!' });
+  document.getElementById('emojiPanel').style.display = 'none';
+  // Titreşim efekti
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+}
+
+// ── DOSYA YÜKLEME ──
+function trigFileUpload() {
+  document.getElementById('fileInput').click();
+}
+
+async function handleFileUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('Dosya 10MB\'dan büyük olamaz'); return; }
+  showToast('📤 Yükleniyor...');
+  const fd = new FormData();
+  fd.append('file', file);
+  try {
+    const r = await fetch('/api/upload', { method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: fd });
+    const d = await r.json();
+    if (r.ok) {
+      socket.emit('message:file', { to: cur.id, fileUrl: d.fileUrl, fileName: file.name, fileSize: file.size });
+      appendMsg({ from: me.id, type: 'file', fileName: file.name, fileUrl: d.fileUrl });
+      showToast('✅ Dosya gönderildi!');
+    }
+  } catch(e) { showToast('❌ Yükleme hatası'); }
+  input.value = '';
+}
+
+// ── SESLİ MESAJ ──
+let voiceRec = false, voiceStream = null, voiceMediaRec = null, voiceChunks = [], voiceBlob = null;
+
+async function toggleVoiceRec() {
+  if (voiceRec) {
+    voiceMediaRec.stop();
+    voiceStream.getTracks().forEach(t => t.stop());
+    voiceRec = false;
+    document.getElementById('voiceRecBtn').textContent = '🎤 Kaydet';
+    document.getElementById('voiceRecBtn').style.background = '#ef4444';
+  } else {
+    try {
+      voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      voiceMediaRec = new MediaRecorder(voiceStream);
+      voiceChunks = [];
+      voiceMediaRec.ondataavailable = e => voiceChunks.push(e.data);
+      voiceMediaRec.onstop = () => {
+        voiceBlob = new Blob(voiceChunks, { type: 'audio/webm' });
+        document.getElementById('voiceStatus').textContent = '✅ ' + Math.round(voiceBlob.size / 1024) + ' KB — Gönder butonuna bas';
+        document.getElementById('voiceSendBtn').style.display = 'inline-block';
+      };
+      voiceMediaRec.start();
+      voiceRec = true;
+      document.getElementById('voiceRecBtn').textContent = '⏹ Durdur';
+      document.getElementById('voiceRecBtn').style.background = '#666';
+      document.getElementById('voiceStatus').textContent = '🔴 Kayıt devam ediyor...';
+      document.getElementById('voiceSendBtn').style.display = 'none';
+    } catch(e) { showToast('❌ Mikrofon erişimi reddedildi'); }
+  }
+}
+
+async function sendVoiceMsg() {
+  if (!voiceBlob || !cur) return;
+  showToast('📤 Gönderiliyor...');
+  const fd = new FormData();
+  fd.append('file', voiceBlob, 'sesli-mesaj.webm');
+  try {
+    const r = await fetch('/api/upload', { method: 'POST', headers: { Authorization: 'Bearer ' + token }, body: fd });
+    const d = await r.json();
+    if (r.ok) {
+      socket.emit('message:file', { to: cur.id, fileUrl: d.fileUrl, fileName: '🎤 Sesli Mesaj', fileSize: voiceBlob.size });
+      appendMsg({ from: me.id, type: 'file', fileName: '🎤 Sesli Mesaj', fileUrl: d.fileUrl });
+      showToast('✅ Sesli mesaj gönderildi!');
+      document.getElementById('voicePanel').style.display = 'none';
+      voiceBlob = null;
+      document.getElementById('voiceSendBtn').style.display = 'none';
+      document.getElementById('voiceStatus').textContent = 'Kayıt için butona bas';
+    }
+  } catch(e) { showToast('❌ Gönderme hatası'); }
+}
 function openGames() { document.getElementById('gamesScreen').style.display = 'flex'; }
 function closeGames() { document.getElementById('gamesScreen').style.display = 'none'; }
 function closeGameWin() { document.getElementById('gameWin').style.display = 'none'; }
