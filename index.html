@@ -875,6 +875,13 @@ body{font-family:Tahoma,sans-serif;background:#1a1a2e;min-height:100vh;display:f
     position:fixed;top:0;left:0;z-index:10;
     transition:transform 0.3s ease;
   }
+  .cwin{
+    position:fixed;top:0;left:0;z-index:10;
+    width:100vw !important;
+    height:100dvh !important;
+    border-radius:0 !important;
+    transition:transform 0.3s ease;
+  }
   .cwin.mob-hidden{transform:translateX(-100%);}
   
   /* Sohbet penceresi - tam ekran mobilde */
@@ -2361,6 +2368,7 @@ function mobBack(){
 }
 async function openChat(id,name,avatar,status,pmsg){
   cur={id,name,avatar,status,pmsg};play('chatOpen');
+  mobShowChat();
   document.querySelectorAll('.ci').forEach(e=>e.classList.remove('active'));
   document.querySelector(`[data-id="${id}"]`)?.classList.add('active');
   document.getElementById('nochat').style.display='none';
